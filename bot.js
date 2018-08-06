@@ -13,7 +13,6 @@ bot.on("ready", () => {
 });
 
 
-
 bot.on("messageReactionAdd", (reaction, user) => {
 
     let role;
@@ -83,6 +82,27 @@ bot.on("messageReactionAdd", (reaction, user) => {
                 role = disc.roles.find("name", "2APP");
                 disc.members.get(user.id).addRole(role);
                 break;
+
+            case "omega":
+                role = disc.roles.find("name", "Omega");
+                disc.members.get(user.id).addRole(role);
+                break;
+
+            case "theta":
+                role = disc.roles.find("name", "Theta");
+                disc.members.get(user.id).addRole(role);
+                break;
+
+            case "sigma":
+                role = disc.roles.find("name", "Sigma");
+                disc.members.get(user.id).addRole(role);
+                break;
+
+            case "delta":
+                role = disc.roles.find("name", "Delta");
+                disc.members.get(user.id).addRole(role);
+                break;
+
         }
     }
 });
@@ -155,10 +175,28 @@ bot.on("messageReactionRemove", (reaction, user) => {
                 role = disc.roles.find("name", "2APP");
                 disc.members.get(user.id).removeRole(role);
                 break;
+
+            case "omega":
+                role = disc.roles.find("name", "Omega");
+                disc.members.get(user.id).removeRole(role);
+                break;
+
+            case "theta":
+                role = disc.roles.find("name", "Theta");
+                disc.members.get(user.id).removeRole(role);
+                break;
+
+            case "sigma":
+                role = disc.roles.find("name", "Sigma");
+                disc.members.get(user.id).removeRole(role);
+                break;
+
+            case "delta":
+                role = disc.roles.find("name", "Delta");
+                disc.members.get(user.id).removeRole(role);
+                break;
         }
     }
 });
-
-
 
 bot.login(auth.discordToken);
