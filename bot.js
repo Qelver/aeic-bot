@@ -6,7 +6,7 @@ const bot = new Discord.Client();
 let disc;
 
 bot.on("ready", () => {
-    disc = bot.guilds.find("name", "trhertherth"); // Remplacer le nom par AEIC
+    disc = bot.guilds.find("name", "!Bot Tournoi"); // Remplacer le nom par AEIC
 
     console.log("Bot Connecté");
     disc.channels.find("name", "accueil").fetchMessages({ limit: 5 });
