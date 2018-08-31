@@ -1,15 +1,21 @@
 {
-  "name": "aeibot",
+  "name": "aeic-bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "A bot to manage AEIC's Discord server",
   "main": "bot.js",
+  "homepage": "https://github.com/rigwild/aeic-bot#readme",
+  "bugs": "https://github.com/rigwild/aeic-bot/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rigwild/aeic-bot.git"
+  },
   "scripts": {
     "start": "node bot.js"
   },
-  "author": "",
   "license": "MIT",
   "dependencies": {
-    "discord.js": "^11.3.2"
+    "discord.js": "^11.3.2",
+    "dotenv": "^6.0.0"
   },
   "devDependencies": {
     "eslint": "^5.3.0"
