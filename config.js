@@ -44,6 +44,10 @@ const rolesList = {
     'Theta',
     'Sigma',
     'Delta'
+  ],
+  notifications: [
+    'notif_esport_on',
+    'notif_echecs_on'
   ]
 }
 

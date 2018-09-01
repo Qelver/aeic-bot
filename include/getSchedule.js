@@ -116,17 +116,6 @@ const recupererEdt = (annee, numTd, numTp) => {
     })
 }
 
-// Exemple d'utilisation
-
-// recupererEdt(1, 1, 'A')
-//   .then(cours => {
-//     // 'cours' contient la liste des cours du prochain jour de cours.
-
-//     for (let cour of cours)
-//       console.info(`${cour.nom} en ${cour.groupe}, salle ${cour.salle}, de ${cour.dateDebut.toLocaleDateString('fr-FR')} à ${cour.dateFin.toLocaleDateString('fr-FR')}, avec ${cour.enseignant}.`)
-//   })
-//   .catch(err => console.error(`Impossible de récupérer l'emploi du temps : ${err}`))
-
 module.exports = {
   recupererEdt
 }

@@ -1,23 +1,9 @@
 'use strict'
 
 const { rolesList } = require('../config')
+const util = require('./util')
 const { getBotMsg } = require('./botMessages')
 const { recupererEdt } = require('./getSchedule')
-
-const isInRoleNameChannel = (rolesMap, channelName) => {
-  channelName = channelName.toLowerCase()
-  let found = false
-  rolesMap.forEach(key => {
-    if (key.name.toLowerCase() === channelName) found = true
-  })
-  return found
-}
-
-const getCommandArgs = msgContent => {
-  let args = msgContent.split(' | ')
-  args = args.map(x => x.trim())
-  return args
-}
 
 // Until db is ready
 const tempHomeworkDb = []
@@ -25,37 +11,12 @@ const sendHomeworkToDatabase = devoir => tempHomeworkDb.push(devoir)
 const getHomeworkFromDatabase = () => tempHomeworkDb
 
 
-const setRole = (serverInfo, user, setRoleBool, ...roles) => {
-  roles.forEach(aRole => {
-    const aRoleEle = serverInfo.roles.find('name', aRole)
-    const userEle = serverInfo.members.get(user.id)
-    if (aRoleEle && userEle)
-      setRoleBool
-        ? userEle.addRole(aRoleEle)
-          .then(_ => console.log(`Ajout du role "${aRole}" à ${user.username} (ID=${user.id}).`))
-          .catch(err => console.error(`Erreur lors de l'ajout du role "${aRole}" à ${user.username} (ID=${user.id}).`, err))
-        : userEle.removeRole(aRoleEle)
-          .then(_ => console.log(`Retrait du role "${aRole}" à ${user.username} (ID=${user.id}).`))
-          .catch(err => console.error(`Erreur lors du retrait du role "${aRole}" à ${user.username} (ID=${user.id}).`, err))
-  })
-}
-
-const getAvailableGroupsStrErr = message => {
-  let groupsStr = ''
-  Object.keys(rolesList.groups).forEach(key => groupsStr += `${key}, `)
-  groupsStr = groupsStr.slice(0, -2) // Remove the last comma
-
-  return getBotMsg('role-groupe-inexistant', message.author) +
-    '\nLes groupes disponibles sont les suivants : ``` ' + groupsStr + '```'
-}
-
-
 // !ajoutDevoir 2018-12-12 | Java | TP Breakout | [facultatif]
 const ajoutDevoir = message => {
-  if (!isInRoleNameChannel(message.member.roles, message.channel.name))
+  if (!util.isInRoleNameChannel(message.member.roles, message.channel.name))
     return message.channel.send(getBotMsg('channel-classe-seulement', message.author, '!ajoutDevoir'))
 
-  const args = getCommandArgs(message.content)
+  const args = util.getCommandArgs(message.content)
   if (args.length >= 2) {
     const devoir = {}
     devoir.classe = message.channel.name
@@ -74,8 +35,9 @@ const ajoutDevoir = message => {
   else message.channel.send(getBotMsg('manque-argument', message.author, '!ajoutDevoir'))
 }
 
+// !afficheDevoir
 const afficheDevoir = message => {
-  if (!isInRoleNameChannel(message.member.roles, message.channel.name))
+  if (!util.isInRoleNameChannel(message.member.roles, message.channel.name))
     return message.channel.send(getBotMsg('channel-classe-seulement', message.author, '!afficheDevoir'))
   const devoirList = getHomeworkFromDatabase()
   if (devoirList.length > 0) {
@@ -105,21 +67,21 @@ const choisirGroupe = (message, serverInfo) => {
           groupRoles.push(gRole)
       })
     })
-    setRole(serverInfo, message.author, false, ...groupRoles)
+    util.setRole(serverInfo, message.author, false, ...groupRoles)
     setTimeout(() => {
-      setRole(serverInfo, message.author, true, ...rolesList.groups[group])
+      util.setRole(serverInfo, message.author, true, ...rolesList.groups[group])
       message.channel.send(getBotMsg('role-groupe-ajoute', message.author))
     }, 2000) // Ajout de délais car on retire beaucoup de rôles avant
   }
   else { // il n'existe pas, on avertis le membre en listant les groupes possibles
-    message.channel.send(getAvailableGroupsStrErr(message))
+    message.channel.send(util.getAvailableGroupsStrErr(message))
   }
 }
 
 // !affichePlanning 1 1 b
 const affichePlanning = message => {
   const msgContent = message.content.replace('!affichePlanning ', '')
-  const args = getCommandArgs(msgContent)
+  const args = util.getCommandArgs(msgContent)
   if (args.length >= 3) {
     if (parseInt(args[0], 10) && parseInt(args[1], 10)) {
       args[0] = parseInt(args[0], 10)
@@ -157,4 +119,6 @@ const searchCommand = (serverInfo, message) => {
       : commandsList[usedCommand].fn(message)
 }
 
-module.exports = { searchCommand }
+module.exports = {
+  searchCommand
+}
