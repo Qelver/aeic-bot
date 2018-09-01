@@ -4,6 +4,8 @@ require('dotenv').config()
 
 const discordAuthToken = process.env.discordAuthToken
 const serverName = process.env.serverName
+const devDiscordId = process.env.devDiscordId
+const linkIcs = process.env.linkIcs
 
 const allRoles = [
   'Première Année',
@@ -50,5 +52,7 @@ module.exports = {
   discordAuthToken,
   serverName,
   allRoles,
-  rolesList
+  rolesList,
+  linkIcs,
+  devDiscordId
 }

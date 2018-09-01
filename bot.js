@@ -3,7 +3,7 @@
 const Discord = require('discord.js')
 
 const { discordAuthToken, serverName } = require('./config')
-const commands = require('./commands')
+const commands = require('./include/commands')
 
 const bot = new Discord.Client()
 bot.login(discordAuthToken)
