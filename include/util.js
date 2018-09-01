@@ -1,7 +1,6 @@
-const {
-  rolesList,
-  database
-} = require('../config')
+'use strict'
+
+const { database } = require('../config')
 const { getBotMsg } = require('./botMessages')
 const sqlQueries = require('./sqlQueries')
 
@@ -43,9 +42,24 @@ const getAvailableGroupsStrErr = message =>
     )
     .catch(console.error)
 
+const getAvailableClansStrErr = message =>
+  database.query(sqlQueries.getAllClans)
+    .then(res =>
+      getBotMsg('role-clan-inexistant', message.author) +
+      '\nLes clans disponibles sont les suivants : ``` ' + res.rows.map(x => x.clan_name).toString() + '```'
+    )
+    .catch(console.error)
+
 const catchedError = (message, commandName, err) => {
   message.channel.send(getBotMsg('erreur-non-decrite-log', null, commandName, err.stack))
   console.error(`Erreur de la commande '${commandName}' :\n${err.stack}`)
+}
+
+const convertDate = date => {
+  const res = new Date(date)
+    .toLocaleString('en-us', {year: 'numeric', month: '2-digit', day: '2-digit'})
+    .replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2')
+  return (res && res !== 'Invalid Date') ? res : null
 }
 
 module.exports = {
@@ -53,5 +67,7 @@ module.exports = {
   getCommandArgs,
   setRole,
   getAvailableGroupsStrErr,
-  catchedError
+  getAvailableClansStrErr,
+  catchedError,
+  convertDate
 }

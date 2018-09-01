@@ -5,7 +5,7 @@ const Discord = require('discord.js')
 const {
   discordAuthToken,
   serverName,
-  rolesList
+  database
 } = require('./config')
 const util = require('./include/util')
 const { searchCommand } = require('./include/commands')

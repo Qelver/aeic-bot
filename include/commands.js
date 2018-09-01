@@ -6,60 +6,74 @@ const { getBotMsg } = require('./botMessages')
 const { recupererEdt } = require('./getSchedule')
 const sqlQueries = require('./sqlQueries')
 
-// Until db is ready
-const tempHomeworkDb = []
-const sendHomeworkToDatabase = devoir => tempHomeworkDb.push(devoir)
-const getHomeworkFromDatabase = () => tempHomeworkDb
 
+// Affiche l'aide du bot
 // !aeic-bot-help
 const aeicBotHelp = message =>
   message.channel.send(getBotMsg('aeic-bot-help'))
 
-// !ajoutDevoir 2018-12-12 | Java | TP Breakout
+// Ajoute un devoir pour un groupe
+// !ajoutDevoir tp1a | 2018-12-12 | Java | TP Breakout
 const ajoutDevoir = message => {
-  if (!util.isInRoleNameChannel(message.member.roles, message.channel.name))
-    return message.channel.send(getBotMsg('channel-classe-seulement', message.author, '!ajoutDevoir'))
-
   const args = util.getCommandArgs(message.content.replace('!ajoutDevoir', '').trim())
-  if (args.length >= 2) {
-    const devoir = {}
-    devoir.classe = message.channel.name
-    devoir.auteur = `<@${message.author.id}>`
-    devoir.date = args[0]
-    devoir.matiere = args[1]
-    devoir.contenu = args[2]
-
-    sendHomeworkToDatabase(devoir)
-    console.log(`Ajout d'un devoir pour la classe ${devoir.classe} par ${devoir.auteur}.`)
-    message.channel.send(`**Un devoir a été ajouté** par ${devoir.auteur} : `
-    + `Pour le \`${devoir.date}\` en \`${devoir.matiere}\` - \`${devoir.contenu}\``)
+  if (args.length >= 4) {
+    (async () => {
+      const params = [
+        args[0], // 0 Groupe
+        util.convertDate(args[1]), // 1 Date
+        args[2], // 2 Cours
+        args[3], // 3 Contenu
+        message.author.id // 4 Id Discord auteur
+      ]
+      if (params.every(x => x.length > 0)) {
+        await database.query(sqlQueries.addHomework, params)
+        console.log(`Ajout d'un devoir par ${message.author.username}. Groupe : ${params[0]}`)
+        message.channel.send(`**Groupe ${params[0]}** Un devoir a été ajouté ! par <@${params[4]}>.\n`
+        + `Pour le \`${params[1]}\` en \`${params[2]}\`. Contenu : \`\`\`${params[3]}\`\`\``)
+      }
+      else message.channel.send(getBotMsg('argument-invalide', message.author, '!ajoutDevoir'))
+    })().catch(err => util.catchedError(message, '!ajoutDevoir', err))
   }
   else message.channel.send(getBotMsg('manque-argument', message.author, '!ajoutDevoir'))
 }
 
-// !afficheDevoir
+
+// Affiche les devoirs d'un groupe
+// !afficheDevoir tp1a
 const afficheDevoir = message => {
-  if (!util.isInRoleNameChannel(message.member.roles, message.channel.name))
-    return message.channel.send(getBotMsg('channel-classe-seulement', message.author, '!afficheDevoir'))
-  const devoirList = getHomeworkFromDatabase()
-  if (devoirList.length > 0) {
-    let msg = 'Liste des devoirs :\n'
-    devoirList.forEach(devoir => {
-      msg += `Auteur : ${devoir.auteur}. `
-      + `Pour le \`${devoir.date}\` en \`${devoir.matiere}\`. `
-      + `Contenu : \`${devoir.contenu}\`. `
-      + '\n'
-    })
-    message.channel.send(msg.trim())
+  const groupName = message.content.replace('!afficheDevoir', '').trim()
+  if (groupName.length > 0) {
+    (async () => {
+      const res = await database.query(sqlQueries.getHomework, [groupName])
+      if (res.rowCount > 0) { // Il y a des devoirs pour ce groupe
+        let msg = `**Groupe ${groupName}**. Liste des devoirs :\n`
+        res.rows.forEach(homework => {
+          const date = homework.date
+          // On formate la date correctement
+          let hDate = date.getFullYear() + '-'
+          hDate += (date.getMonth() + 1).toString().padStart(2, '0') + '-'
+          hDate += date.getDate().toString().padStart(2, '0')
+
+          // On ajoute le devoir au message
+          msg += `Auteur : <@${homework.author_discord_id}>. `
+          + `Pour le \`${hDate}\` en \`${homework.course}\`. `
+          + `Contenu : \`${homework.content}\`.\n`
+        })
+        message.channel.send(msg)
+      }
+      else // Aucun devoir pour ce groupe (ou il n'existe pas)
+        message.channel.send(getBotMsg('aucun-devoir'))
+    })().catch(err => util.catchedError(message, '!afficheDevoir', err))
   }
+  else message.channel.send(getBotMsg('manque-argument', message.author, '!afficheDevoir'))
 }
 
+// Applique les rôles correspondants au groupe choisi
 // !choisirGroupe tp1a
 const choisirGroupe = (message, serverInfo) => {
   const groupToAdd = message.content.replace('!choisirGroupe', '').trim()
   if (groupToAdd) {
     (async () => {
-
       const res = await database.query(sqlQueries.getRolesOfGroup, [groupToAdd])
       if (res.rowCount > 0) { // Le groupe existe
         const res2 = await database.query(sqlQueries.getAllRolesFromGroups)
@@ -74,13 +88,41 @@ const choisirGroupe = (message, serverInfo) => {
       }
       else // Le groupe n'existe pas, on avertis le membre en listant les groupes possibles
         message.channel.send(await util.getAvailableGroupsStrErr(message))
-    }).catch(err => util.catchedError(message, '!choisirGroupe', err))
-
+    })().catch(err => util.catchedError(message, '!choisirGroupe', err))
   }
   else message.channel.send(getBotMsg('manque-argument', message.author, '!choisirGroupe'))
 }
 
-// !affichePlanning 1 1 b
+
+// Applique le rôle correspondant au clan choisi
+// !choisirClan omega
+const choisirClan = (message, serverInfo) => {
+  const clanToAdd = message.content.replace('!choisirClan', '').trim()
+  if (clanToAdd) {
+    (async () => {
+
+      const res = await database.query(sqlQueries.searchClan, [clanToAdd])
+      if (res.rowCount > 0) { // Le clan existe
+        const res2 = await database.query(sqlQueries.getAllClans)
+        // On supprime les roles des autres clans
+        util.setRole(serverInfo, message.author, false, ...res2.rows.map(x => x.role_name))
+
+        // On ajoute le nouveau rôle
+        setTimeout(() => {
+          util.setRole(serverInfo, message.author, true, ...res.rows.map(x => x.role_name))
+          message.channel.send(getBotMsg('role-clan-ajoute', message.author))
+        }, 2000) // Ajout de délais car on retire beaucoup de rôles avant : limite discord
+      }
+      else // Le clan n'existe pas, on avertis le membre en listant les clans possibles
+        message.channel.send(await util.getAvailableClansStrErr(message))
+    })().catch(err => util.catchedError(message, '!choisirClan', err))
+  }
+  else message.channel.send(getBotMsg('manque-argument', message.author, '!choisirClan'))
+}
+
+
+// Affiche l'emploi du temps demandé. Params : Année d'étude, Groupe de TD, Groupe de Tp
+// !affichePlanning 1 | 1 | b
 const affichePlanning = message => {
   const msgContent = message.content.replace('!affichePlanning', '').trim()
   const args = util.getCommandArgs(msgContent)
@@ -108,7 +150,8 @@ const commandsList = {
   '!ajoutDevoir': {fn: ajoutDevoir, needServerInfo: false},
   '!afficheDevoir': {fn: afficheDevoir, needServerInfo: false},
   '!affichePlanning': {fn: affichePlanning, needServerInfo: false},
-  '!choisirGroupe': {fn: choisirGroupe, needServerInfo: true}
+  '!choisirGroupe': {fn: choisirGroupe, needServerInfo: true},
+  '!choisirClan': {fn: choisirClan, needServerInfo: true}
 }
 
 const searchCommand = (serverInfo, message) => {
