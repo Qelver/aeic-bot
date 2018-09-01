@@ -34,8 +34,8 @@ const botMsg = {
   'manque-argument': 'Il manque des arguments à la commande `#commandName#`.' + needHelp,
   'argument-invalide': 'Les arguments entrés pour la commande `#commandName#` sont invalides.' + needHelp,
   'aucun-devoir': 'Il n\'y a aucun devoir **enregistré** pour ce groupe.' + needHelp,
-  'erreur-non-decrite': 'Une erreur non décrite s\'est produite. Help <@' + devDiscordId + '> ! Commande : `#commandName`',
-  'erreur-non-decrite-log': 'Une erreur non décrite s\'est produite. Help <@' + devDiscordId + '> ! Commande : `#commandName#` ```#logMessage#```'
+  'erreur-non-decrite': 'Une erreur non décrite s\'est produite. Help <@' + devDiscordId + '> ! Commande : `#commandName`.',
+  'erreur-non-decrite-log': 'Une erreur non décrite s\'est produite. Help <@' + devDiscordId + '> ! Commande : `#commandName#`. ```#logMessage#```'
 }
 
 const msgExists = botMsgId => !!Object.keys(botMsg).find(x => x === botMsgId)

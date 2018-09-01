@@ -8,6 +8,7 @@ const {
   database
 } = require('./config')
 const util = require('./include/util')
+const sqlQueries = require('./include/sqlQueries')
 const { searchCommand } = require('./include/commands')
 
 
@@ -31,14 +32,21 @@ bot.on('message', message => searchCommand(serverInfo, message))
 
 // Ajouter/supprimer les rôles de notification
 bot.on('messageReactionAdd', (reaction, user) => {
-  if (reaction.message.channel.name === 'config-notifications' &&
-      reaction.emoji.name &&
-      !!rolesList.notifications.find(x => x === reaction.emoji.name))
-    util.setRole(serverInfo, user, true, reaction.emoji.name)
+  if (reaction.message.channel.name === 'config-notifications' && reaction.emoji.name) {
+    (async () => {
+      const notifications = await database.query(sqlQueries.getAllNotifications)
+      if (notifications.rows.find(x => x.notif_name === reaction.emoji.name))
+        util.setRole(serverInfo, user, true, reaction.emoji.name)
+    })().catch(console.error)
+  }
 })
+// Ajouter/supprimer les rôles de notification
 bot.on('messageReactionRemove', (reaction, user) => {
-  if (reaction.message.channel.name === 'config-notifications' &&
-      reaction.emoji.name &&
-      !!rolesList.notifications.find(x => x === reaction.emoji.name))
-    util.setRole(serverInfo, user, false, reaction.emoji.name)
+  if (reaction.message.channel.name === 'config-notifications' && reaction.emoji.name) {
+    (async () => {
+      const notifications = await database.query(sqlQueries.getAllNotifications)
+      if (notifications.rows.find(x => x.notif_name === reaction.emoji.name))
+        util.setRole(serverInfo, user, false, reaction.emoji.name)
+    })().catch(console.error)
+  }
 })
