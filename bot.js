@@ -10,6 +10,7 @@ const {
 const util = require('./include/util')
 const { searchCommand } = require('./include/commands')
 
+
 const bot = new Discord.Client()
 bot.login(discordAuthToken)
 

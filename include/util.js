@@ -1,5 +1,9 @@
-const { rolesList } = require('../config')
+const {
+  rolesList,
+  database
+} = require('../config')
 const { getBotMsg } = require('./botMessages')
+const sqlQueries = require('./sqlQueries')
 
 const isInRoleNameChannel = (rolesMap, channelName) => {
   channelName = channelName.toLowerCase()
@@ -32,12 +36,22 @@ const setRole = (serverInfo, user, setRoleBool, ...roles) => {
 }
 
 const getAvailableGroupsStrErr = message =>
-  getBotMsg('role-groupe-inexistant', message.author) +
-    '\nLes groupes disponibles sont les suivants : ``` ' + Object.keys(rolesList.groups).toString() + '```'
+  database.query(sqlQueries.getAllGroups)
+    .then(res =>
+      getBotMsg('role-groupe-inexistant', message.author) +
+      '\nLes groupes disponibles sont les suivants : ``` ' + res.rows.map(x => x.group_name).toString() + '```'
+    )
+    .catch(console.error)
+
+const catchedError = (message, commandName, err) => {
+  message.channel.send(getBotMsg('erreur-non-decrite-log', null, commandName, err.stack))
+  console.error(`Erreur de la commande '${commandName}' :\n${err.stack}`)
+}
 
 module.exports = {
   isInRoleNameChannel,
   getCommandArgs,
   setRole,
-  getAvailableGroupsStrErr
+  getAvailableGroupsStrErr,
+  catchedError
 }

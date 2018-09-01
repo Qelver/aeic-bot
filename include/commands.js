@@ -1,9 +1,10 @@
 'use strict'
 
-const { rolesList } = require('../config')
+const { database } = require('../config')
 const util = require('./util')
 const { getBotMsg } = require('./botMessages')
 const { recupererEdt } = require('./getSchedule')
+const sqlQueries = require('./sqlQueries')
 
 // Until db is ready
 const tempHomeworkDb = []
@@ -19,7 +20,7 @@ const ajoutDevoir = message => {
   if (!util.isInRoleNameChannel(message.member.roles, message.channel.name))
     return message.channel.send(getBotMsg('channel-classe-seulement', message.author, '!ajoutDevoir'))
 
-  const args = util.getCommandArgs(message.content.replace('!ajoutDevoir ', ''))
+  const args = util.getCommandArgs(message.content.replace('!ajoutDevoir', '').trim())
   if (args.length >= 2) {
     const devoir = {}
     devoir.classe = message.channel.name
@@ -55,32 +56,33 @@ const afficheDevoir = message => {
 
 // !choisirGroupe tp1a
 const choisirGroupe = (message, serverInfo) => {
-  const groupToAdd = message.content.replace('!choisirGroupe ', '')
-  const group = Object.keys(rolesList.groups).find(key => key === groupToAdd)
-  if (group) { // Le groupe existe, on applique les rôles en supprimant tous les autres des groupes
+  const groupToAdd = message.content.replace('!choisirGroupe', '').trim()
+  if (groupToAdd) {
+    (async () => {
 
-    // On récupère la liste des groupes et les suppriment
-    let groupRoles = []
-    Object.keys(rolesList.groups).forEach(key => {
-      rolesList.groups[key].forEach(gRole => {
-        if (!groupRoles.find(x => x === gRole))
-          groupRoles.push(gRole)
-      })
-    })
-    util.setRole(serverInfo, message.author, false, ...groupRoles)
-    setTimeout(() => {
-      util.setRole(serverInfo, message.author, true, ...rolesList.groups[group])
-      message.channel.send(getBotMsg('role-groupe-ajoute', message.author))
-    }, 2000) // Ajout de délais car on retire beaucoup de rôles avant
+      const res = await database.query(sqlQueries.getRolesOfGroup, [groupToAdd])
+      if (res.rowCount > 0) { // Le groupe existe
+        const res2 = await database.query(sqlQueries.getAllRolesFromGroups)
+        // On supprime tous les roles appartenant à des groupes
+        util.setRole(serverInfo, message.author, false, ...res2.rows.map(x => x.role_name))
+
+        // On ajoute les nouveaux roles
+        setTimeout(() => {
+          util.setRole(serverInfo, message.author, true, ...res.rows.map(x => x.role_name))
+          message.channel.send(getBotMsg('role-groupe-ajoute', message.author))
+        }, 2000) // Ajout de délais car on retire beaucoup de rôles avant : limite discord
+      }
+      else // Le groupe n'existe pas, on avertis le membre en listant les groupes possibles
+        message.channel.send(await util.getAvailableGroupsStrErr(message))
+    }).catch(err => util.catchedError(message, '!choisirGroupe', err))
+
   }
-  else { // il n'existe pas, on avertis le membre en listant les groupes possibles
-    message.channel.send(util.getAvailableGroupsStrErr(message))
-  }
+  else message.channel.send(getBotMsg('manque-argument', message.author, '!choisirGroupe'))
 }
 
 // !affichePlanning 1 1 b
 const affichePlanning = message => {
-  const msgContent = message.content.replace('!affichePlanning ', '')
+  const msgContent = message.content.replace('!affichePlanning', '').trim()
   const args = util.getCommandArgs(msgContent)
   if (args.length >= 3) {
     if (parseInt(args[0], 10) && parseInt(args[1], 10)) {
@@ -94,10 +96,7 @@ const affichePlanning = message => {
           // TODO: Afficher le planning
           message.channel.send(`${msg}${scheduleStr}`)
         })
-        .catch(err => {
-          message.channel.send(getBotMsg('erreur-non-decrite-log', null, '!affichePlanning', err.stack))
-          console.error(`Erreur de la commande '!affichePlanning' :\n${err.stack}`)
-        })
+        .catch(err => util.catchedError(message, '!affichePlanning', err))
     }
     else message.channel.send(getBotMsg('argument-invalide', message.author, '!affichePlanning'))
   }
