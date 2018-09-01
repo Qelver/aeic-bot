@@ -5,24 +5,43 @@ require('dotenv').config()
 const discordAuthToken = process.env.discordAuthToken
 const serverName = process.env.serverName
 
+const allRoles = [
+  'Première Année',
+  'Deuxième Année',
+  'TP1A',
+  'TP1B',
+  'TP1C',
+  'TP1D',
+  'TP1E',
+  'TP2A',
+  'TP2B',
+  'TP2C',
+  'TP2D',
+  'TP2E',
+  'Omega',
+  'Theta',
+  'Sigma',
+  'Delta'
+]
+
 const rolesList = {
   groups: {
-    '1tpa': ['Première Année', 'TP1A'],
-    '1tpb': ['Première Année', 'TP1B'],
-    '1tpc': ['Première Année', 'TP1C'],
-    '1tpd': ['Première Année', 'TP1D'],
-    '1tpe': ['Première Année', 'TP1E'],
-    '2tpa': ['Deuxième Année', 'TP2A'],
-    '2tpb': ['Deuxième Année', 'TP2B'],
-    '2tpc': ['Deuxième Année', 'TP2C'],
-    '2tpd': ['Deuxième Année', 'TP2D'],
-    '2tpe': ['Deuxième Année', 'TP2E']
+    'tp1a': ['Première Année', 'TP1A'],
+    'tp1b': ['Première Année', 'TP1B'],
+    'tp1c': ['Première Année', 'TP1C'],
+    'tp1d': ['Première Année', 'TP1D'],
+    'tp1e': ['Première Année', 'TP1E'],
+    'tp2a': ['Deuxième Année', 'TP2A'],
+    'tp2b': ['Deuxième Année', 'TP2B'],
+    'tp2c': ['Deuxième Année', 'TP2C'],
+    'tp2d': ['Deuxième Année', 'TP2D'],
+    'tp2e': ['Deuxième Année', 'TP2E']
   },
   clans: [
-    'omega',
-    'theta',
-    'sigma',
-    'delta'
+    'Omega',
+    'Theta',
+    'Sigma',
+    'Delta'
   ]
 }
 
@@ -30,5 +49,6 @@ const rolesList = {
 module.exports = {
   discordAuthToken,
   serverName,
+  allRoles,
   rolesList
 }

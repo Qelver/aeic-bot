@@ -98,9 +98,21 @@ const afficheDevoir = message => {
 const choisirGroupe = (message, serverInfo) => {
   const groupToAdd = message.content.replace('!choisirGroupe ', '')
   const group = Object.keys(rolesList.groups).find(key => key === groupToAdd)
-  if (group) { // Le groupe existe, on applique les rôles
-    setRole(serverInfo, message.author, true, ...rolesList.groups[group])
-    message.channel.send(getBotMsg('role-groupe-ajoute', message.author))
+  if (group) { // Le groupe existe, on applique les rôles en supprimant tous les autres des groupes
+
+    // On récupère la liste des groupes et les suppriment
+    let groupRoles = []
+    Object.keys(rolesList.groups).forEach(key => {
+      rolesList.groups[key].forEach(gRole => {
+        if (!groupRoles.find(x => x === gRole))
+          groupRoles.push(gRole)
+      })
+    })
+    setRole(serverInfo, message.author, false, ...groupRoles)
+    setTimeout(() => {
+      setRole(serverInfo, message.author, true, ...rolesList.groups[group])
+      message.channel.send(getBotMsg('role-groupe-ajoute', message.author))
+    }, 2000) // Ajout de délais car on retire beaucoup de rôles avant
   }
   else { // il n'existe pas, on avertis le membre en listant les groupes possibles
     let groupsStr = ''
