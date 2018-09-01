@@ -31,14 +31,9 @@ const setRole = (serverInfo, user, setRoleBool, ...roles) => {
   })
 }
 
-const getAvailableGroupsStrErr = message => {
-  let groupsStr = ''
-  Object.keys(rolesList.groups).forEach(key => groupsStr += `${key}, `)
-  groupsStr = groupsStr.slice(0, -2) // Retirer la dernière virgule
-
-  return getBotMsg('role-groupe-inexistant', message.author) +
-    '\nLes groupes disponibles sont les suivants : ``` ' + groupsStr + '```'
-}
+const getAvailableGroupsStrErr = message =>
+  getBotMsg('role-groupe-inexistant', message.author) +
+    '\nLes groupes disponibles sont les suivants : ``` ' + Object.keys(rolesList.groups).toString() + '```'
 
 module.exports = {
   isInRoleNameChannel,

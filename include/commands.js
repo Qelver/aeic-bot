@@ -10,27 +10,28 @@ const tempHomeworkDb = []
 const sendHomeworkToDatabase = devoir => tempHomeworkDb.push(devoir)
 const getHomeworkFromDatabase = () => tempHomeworkDb
 
+// !aeic-bot-help
+const aeicBotHelp = message =>
+  message.channel.send(getBotMsg('aeic-bot-help'))
 
-// !ajoutDevoir 2018-12-12 | Java | TP Breakout | [facultatif]
+// !ajoutDevoir 2018-12-12 | Java | TP Breakout
 const ajoutDevoir = message => {
   if (!util.isInRoleNameChannel(message.member.roles, message.channel.name))
     return message.channel.send(getBotMsg('channel-classe-seulement', message.author, '!ajoutDevoir'))
 
-  const args = util.getCommandArgs(message.content)
+  const args = util.getCommandArgs(message.content.replace('!ajoutDevoir ', ''))
   if (args.length >= 2) {
     const devoir = {}
     devoir.classe = message.channel.name
     devoir.auteur = `<@${message.author.id}>`
-    devoir.date = args[0].replace('!ajoutDevoir ', '')
+    devoir.date = args[0]
     devoir.matiere = args[1]
     devoir.contenu = args[2]
-    devoir.facultatif = (args.length >= 3 && args[3] === 'facultatif')
 
     sendHomeworkToDatabase(devoir)
     console.log(`Ajout d'un devoir pour la classe ${devoir.classe} par ${devoir.auteur}.`)
     message.channel.send(`**Un devoir a été ajouté** par ${devoir.auteur} : `
-    + `Pour le \`${devoir.date}\` en \`${devoir.matiere}\` - \`${devoir.contenu}\` - Ce devoir `
-    + `${devoir.facultatif ? 'est' : 'n\'est pas'} facultatif.`)
+    + `Pour le \`${devoir.date}\` en \`${devoir.matiere}\` - \`${devoir.contenu}\``)
   }
   else message.channel.send(getBotMsg('manque-argument', message.author, '!ajoutDevoir'))
 }
@@ -46,7 +47,6 @@ const afficheDevoir = message => {
       msg += `Auteur : ${devoir.auteur}. `
       + `Pour le \`${devoir.date}\` en \`${devoir.matiere}\`. `
       + `Contenu : \`${devoir.contenu}\`. `
-      + `${devoir.facultatif ? 'Facultatif' : 'Non facultatif'}.`
       + '\n'
     })
     message.channel.send(msg.trim())
@@ -105,6 +105,7 @@ const affichePlanning = message => {
 }
 
 const commandsList = {
+  '!aeic-bot-help': {fn: aeicBotHelp, needServerInfo: false},
   '!ajoutDevoir': {fn: ajoutDevoir, needServerInfo: false},
   '!afficheDevoir': {fn: afficheDevoir, needServerInfo: false},
   '!affichePlanning': {fn: affichePlanning, needServerInfo: false},
