@@ -5,8 +5,10 @@ const Discord = require('discord.js')
 const {
   discordAuthToken,
   serverName,
-  database
+  database,
+  homeChannelId
 } = require('./config')
+const { getBotMsg } = require('./include/botMessages')
 const util = require('./include/util')
 const sqlQueries = require('./include/sqlQueries')
 const { searchCommand } = require('./include/commands')
@@ -40,7 +42,6 @@ bot.on('messageReactionAdd', (reaction, user) => {
     })().catch(console.error)
   }
 })
-// Ajouter/supprimer les rôles de notification
 bot.on('messageReactionRemove', (reaction, user) => {
   if (reaction.message.channel.name === 'config-notifications' && reaction.emoji.name) {
     (async () => {
@@ -49,4 +50,11 @@ bot.on('messageReactionRemove', (reaction, user) => {
         util.setRole(serverInfo, user, false, reaction.emoji.name)
     })().catch(console.error)
   }
+})
+
+
+// Envoyer un message quand un nouvel utilisateur rejoins le serveur
+bot.on('guildMemberAdd', user => {
+  const channel = user.guild.channels.find(x => x.id === homeChannelId)
+  if (channel) channel.send(getBotMsg('welcome-message', user))
 })

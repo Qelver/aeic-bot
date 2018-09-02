@@ -5,6 +5,13 @@ const {
   configNotificationsChannelId
 } = require('../config')
 
+const welcomeMsg =
+`Bienvenue sur le Discord de l'**AEIC** ! Je suis l'**AEIC-BOT**.
+Tu peux afficher la liste de mes commandes en utilisant la commande \`!aeic-bot-help\`.
+Il est par exemple possible de choisir ton groupe de classe, ajouter/afficher les devoirs ou encore voir ton planning.
+
+**Configure tes notifications** dans le channel <#${configNotificationsChannelId}>.`
+
 const helpMsg =
 `Pour configurer tes notifications rends-toi dans le channel <#${configNotificationsChannelId}>.
 
@@ -26,6 +33,7 @@ const needHelp = ' Utilise `!aeic-bot-help` pour obtenir de l\'aide sur les comm
 
 const botMsg = {
   'aeic-bot-help': helpMsg,
+  'welcome-message': welcomeMsg,
   'role-groupe-inexistant': 'Le groupe de classe indiqué n\'existe pas.' + needHelp,
   'role-groupe-ajoute': 'Les rôles de groupe de classe ont été appliqués.',
   'role-clan-inexistant': 'Le clan indiqué n\'existe pas.' + needHelp,
@@ -40,9 +48,9 @@ const botMsg = {
 
 const msgExists = botMsgId => !!Object.keys(botMsg).find(x => x === botMsgId)
 
-const getBotMsg = (botMsgId, msgAuthor, commandName, logMessage) => {
+const getBotMsg = (botMsgId, userToMention, commandName, logMessage) => {
   let msgToSend = ''
-  if (msgAuthor) msgToSend += `Hey <@${msgAuthor.id}> ! `
+  if (userToMention) msgToSend += `Hey <@${userToMention.id}> ! `
   msgToSend += msgExists(botMsgId) ? botMsg[botMsgId] : botMsg['erreur-non-decrite']
   if (commandName) msgToSend = msgToSend.replace('#commandName#', commandName)
   if (logMessage) msgToSend = msgToSend.replace('#logMessage#', logMessage)
