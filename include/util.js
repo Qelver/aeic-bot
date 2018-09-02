@@ -20,18 +20,38 @@ const getCommandArgs = msgContent => {
 }
 
 const setRole = (serverInfo, user, setRoleBool, ...roles) => {
-  roles.forEach(aRole => {
-    const aRoleEle = serverInfo.roles.find('name', aRole)
-    const userEle = serverInfo.members.get(user.id)
-    if (aRoleEle && userEle)
-      setRoleBool
-        ? userEle.addRole(aRoleEle)
-          .then(_ => console.log(`Ajout du role "${aRole}" à ${user.username} (ID=${user.id}).`))
-          .catch(err => console.error(`Erreur lors de l'ajout du role "${aRole}" à ${user.username} (ID=${user.id}).`, err))
-        : userEle.removeRole(aRoleEle)
-          .then(_ => console.log(`Retrait du role "${aRole}" à ${user.username} (ID=${user.id}).`))
-          .catch(err => console.error(`Erreur lors du retrait du role "${aRole}" à ${user.username} (ID=${user.id}).`, err))
-  })
+  // On récupère les infos de l'user
+  const userEle = serverInfo.members.get(user.id)
+  if (userEle) {
+    roles.forEach(aRole => {
+      // On récupère les infos du rôle
+      const aRoleEle = serverInfo.roles.find('name', aRole)
+      if (aRoleEle) { // Role existe
+
+        // On check si l'user possède déjà le rôle
+        // Impossible d'utiliser array.find : c'est un Map.
+        let userHasRole = false
+        userEle.roles.forEach(x => {
+          if (x.name === aRole) userHasRole = true
+        })
+
+        if (setRoleBool) { // On doit donner le rôle
+          if (!userHasRole) { // Il ne possède pas le rôle
+            return userEle.addRole(aRoleEle)
+              .then(_ => console.log(`Ajout du role "${aRole}" à ${user.username} (ID=${user.id}).`))
+              .catch(err => console.error(`Erreur lors de l'ajout du role "${aRole}" à ${user.username} (ID=${user.id}).`, err))
+          }
+        }
+        else { // On doit retirer le rôle
+          if (userHasRole) { // Il possède le rôle
+            return userEle.removeRole(aRoleEle)
+              .then(_ => console.log(`Retrait du role "${aRole}" à ${user.username} (ID=${user.id}).`))
+              .catch(err => console.error(`Erreur lors du retrait du role "${aRole}" à ${user.username} (ID=${user.id}).`, err))
+          }
+        }
+      }
+    })
+  }
 }
 
 const getAvailableGroupsStrErr = message =>

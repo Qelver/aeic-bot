@@ -77,14 +77,19 @@ const choisirGroupe = (message, serverInfo) => {
       const res = await database.query(sqlQueries.getRolesOfGroup, [groupToAdd])
       if (res.rowCount > 0) { // Le groupe existe
         const res2 = await database.query(sqlQueries.getAllRolesFromGroups)
+        const rolesOfGroup = res.rows.map(x => x.role_name)
+
         // On supprime tous les roles appartenant à des groupes
-        util.setRole(serverInfo, message.author, false, ...res2.rows.map(x => x.role_name))
+        // On filtre les rôles du groupe à ajouter des rôles à supprimer
+        // (On supprime les rôles AVANT, si on possède déjà le rôle, on économise 1 requête.)
+        const rolesToRemove = res2.rows.map(x => x.role_name)
+          .filter(x => !rolesOfGroup.find(y => y === x))
+
+        await util.setRole(serverInfo, message.author, false, ...rolesToRemove)
 
         // On ajoute les nouveaux roles
-        setTimeout(() => {
-          util.setRole(serverInfo, message.author, true, ...res.rows.map(x => x.role_name))
-          message.channel.send(getBotMsg('role-groupe-ajoute', message.author))
-        }, 2000) // Ajout de délais car on retire beaucoup de rôles avant : limite discord
+        await util.setRole(serverInfo, message.author, true, ...rolesOfGroup)
+        message.channel.send(getBotMsg('role-groupe-ajoute', message.author))
       }
       else // Le groupe n'existe pas, on avertis le membre en listant les groupes possibles
         message.channel.send(await util.getAvailableGroupsStrErr(message))
@@ -105,13 +110,15 @@ const choisirClan = (message, serverInfo) => {
       if (res.rowCount > 0) { // Le clan existe
         const res2 = await database.query(sqlQueries.getAllClans)
         // On supprime les roles des autres clans
-        util.setRole(serverInfo, message.author, false, ...res2.rows.map(x => x.role_name))
+        const rolesToRemove = res2.rows
+          .map(x => x.clan_name)
+          .filter(x => x.toLowerCase() !== clanToAdd.toLowerCase())
+
+        await util.setRole(serverInfo, message.author, false, ...rolesToRemove)
 
         // On ajoute le nouveau rôle
-        setTimeout(() => {
-          util.setRole(serverInfo, message.author, true, ...res.rows.map(x => x.role_name))
-          message.channel.send(getBotMsg('role-clan-ajoute', message.author))
-        }, 2000) // Ajout de délais car on retire beaucoup de rôles avant : limite discord
+        await util.setRole(serverInfo, message.author, true, ...res.rows.map(x => x.clan_name))
+        message.channel.send(getBotMsg('role-clan-ajoute', message.author))
       }
       else // Le clan n'existe pas, on avertis le membre en listant les clans possibles
         message.channel.send(await util.getAvailableClansStrErr(message))
