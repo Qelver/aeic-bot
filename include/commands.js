@@ -23,7 +23,7 @@ const ajouterDevoir = message => {
     (async () => {
       const params = [
         args[0], // 0 Groupe
-        util.convertDate(args[1]), // 1 Date
+        util.convertDateformat(args[1]), // 1 Date
         args[2], // 2 Cours
         args[3], // 3 Contenu
         message.author.id // 4 Id Discord auteur
@@ -51,15 +51,11 @@ const afficherDevoir = message => {
       if (res.rowCount > 0) { // Il y a des devoirs pour ce groupe
         let msg = `**Groupe ${groupName}**. Liste des devoirs :\n`
         res.rows.forEach(homework => {
-          const date = homework.date
-          // On formate la date correctement
-          let hDate = date.getFullYear() + '-'
-          hDate += (date.getMonth() + 1).toString().padStart(2, '0') + '-'
-          hDate += date.getDate().toString().padStart(2, '0')
+          const date = util.convertDateformat(homework.date)
 
           // On ajoute le devoir au message
           msg += `Auteur : <@${homework.author_discord_id}>. `
-          + `Pour le \`${hDate}\` en \`${homework.course}\`. `
+          + `Pour le \`${date}\` en \`${homework.course}\`. `
           + `Contenu : \`${homework.content}\`.\n`
         })
         message.channel.send(msg)
@@ -147,14 +143,13 @@ const afficherPlanning = message => {
             const msg = `Voici l'emploi du temps pour Année ${args[0]} TD${args[1]} TP${args[2]} :\n`
             let scheduleStr = ''
 
-            const configDay = {year: 'numeric', month: '2-digit', day: '2-digit'}
             const configHour = {hour: '2-digit', minute: '2-digit', hour12: false}
             res.forEach(x => {
-              const day = new Date(x.dateDebut).toLocaleString('fr-fr', configDay)
-              const start = new Date(x.dateDebut).toLocaleString('fr-fr', configHour)
-              const end = new Date(x.dateFin).toLocaleString('fr-fr', configHour)
-              scheduleStr += `Le \`${day}\`. De ${start} à ${end} : `
-              scheduleStr += `${x.groupe} de ${x.nom} en ${x.salle} par ${x.enseignant}.\n`
+              const day = util.convertDateformat(x.dateDebut)
+              const hourStart = new Date(x.dateDebut).toLocaleString('fr-FR', configHour)
+              const hourEnd = new Date(x.dateFin).toLocaleString('fr-FR', configHour)
+              scheduleStr += `Le ${day}, de ${hourStart} à ${hourEnd} : `
+              scheduleStr += `${x.groupe} de \`${x.nom}\` en \`${x.salle}\` par ${x.enseignant}.\n`
             })
             message.channel.send(`${msg}${scheduleStr}`.trim())
           }
