@@ -62,11 +62,11 @@ const getAvailableGroupsStrErr = message =>
     )
     .catch(console.error)
 
-const getAvailableClansStrErr = message =>
-  database.query(sqlQueries.getAllClans)
+const getAvailableMaisonsStrErr = message =>
+  database.query(sqlQueries.getAllMaisons)
     .then(res =>
-      getBotMsg('role-clan-inexistant', message.author) +
-      '\nLes clans disponibles sont les suivants : ``` ' + res.rows.map(x => x.clan_name).toString() + '```'
+      getBotMsg('role-maison-inexistant', message.author) +
+      '\nLes maisons disponibles sont les suivantes : ``` ' + res.rows.map(x => x.maison_name).toString() + '```'
     )
     .catch(console.error)
 
@@ -87,7 +87,7 @@ module.exports = {
   getCommandArgs,
   setRole,
   getAvailableGroupsStrErr,
-  getAvailableClansStrErr,
+  getAvailableMaisonsStrErr,
   catchedError,
   convertDate
 }

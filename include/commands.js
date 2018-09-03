@@ -5,10 +5,13 @@ const util = require('./util')
 const { getBotMsg } = require('./botMessages')
 const { recupererEdt } = require('./getSchedule')
 const sqlQueries = require('./sqlQueries')
+const https = require('https')
+const querystring = require('querystring')
+const url = require('url')
 
 
 // Affiche l'aide du bot
-// !aeic-bot-help
+// !aide
 const aeicBotHelp = message =>
   message.channel.send(getBotMsg('aeic-bot-help'))
 
@@ -152,13 +155,73 @@ const affichePlanning = message => {
   else message.channel.send(getBotMsg('manque-argument', message.author, '!affichePlanning'))
 }
 
+// Valide un code d'appairage Discord-Moodle https://github.com/rigwild/register-discord
+// !relierDiscord code
+const relierDiscord = message => {
+  const code = message.content.replace('!relierDiscord', '').trim()
+  if (code) {
+    const postData = querystring.stringify({code})
+    const options = {
+      hostname: url.parse('https://register-discord.now.sh/').hostname,
+      path: url.parse('https://register-discord.now.sh/').path,
+      port: 443,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }
+    let req = https.request(options, response => {
+      let data = ''
+      response.on('data', chunk => data += chunk)
+
+      response.on('end', () => {
+        data = JSON.parse(data)
+        if (data.hasOwnProperty('success') && data.success)
+          message.channel.send(getBotMsg('relier-discord-ok', message.author, '!relierDiscord'))
+        else
+          message.channel.send(getBotMsg('relier-discord-fail', message.author, '!relierDiscord'))
+      })
+    }).on('error', err => util.catchedError(message, '!relierDiscord', err))
+
+    req.write(postData)
+    req.end()
+  }
+  else message.channel.send(getBotMsg('manque-argument', message.author, '!relierDiscord'))
+}
+
+// Mentionne un membre du serveur via son "nom.prenom" ou "nom prénom" ou "prénom nom"
+// !trouverDiscord sauvage.antoine
+const trouverDiscord = message => {
+  const toSearch = message.content.replace('!trouverDiscord', '').trim()
+  if (toSearch) {
+    const separated = toSearch.split(' ')
+    (async () => {
+      if (separated.length === 2) { // Format "nom prénom" ou "prénom nom"
+        const res = await database.query(sqlQueries.searchDiscordByName, [separated[0], separated[1]])
+        if (res.rowCount > 0)
+          message.channel.send(`Le profil Discord de ${separated[0]} ${separated[1]} est <@${res.rows[0].discord_id}`)
+        else
+          message.channel.send(`Le profil Discord de ${separated[0]} ${separated[1]} n'a pas été trouvé.`)
+      }
+      else { // Format "nom.prenom"
+        const res = await database.query(sqlQueries.searchDiscordByMoodleUsername, [toSearch])
+        if (res.rowCount > 0)
+          message.channel.send(`Le profil Discord de ${toSearch} est <@${res.rows[0].discord_id}`)
+        else
+          message.channel.send(`Le profil Discord de ${toSearch} n'a pas été trouvé.`)
+      }
+    })().catch(err => util.catchedError(message, '!trouverDiscord', err))
+  }
+  else message.channel.send(getBotMsg('manque-argument', message.author, '!trouverDiscord'))
+}
+
 const commandsList = {
-  '!aeic-bot-help': {fn: aeicBotHelp, needServerInfo: false},
+  '!aide': {fn: aeicBotHelp, needServerInfo: false},
   '!ajoutDevoir': {fn: ajoutDevoir, needServerInfo: false},
   '!afficheDevoir': {fn: afficheDevoir, needServerInfo: false},
   '!affichePlanning': {fn: affichePlanning, needServerInfo: false},
   '!choisirGroupe': {fn: choisirGroupe, needServerInfo: true},
-  '!choisirMaison': {fn: choisirMaison, needServerInfo: true}
+  '!choisirMaison': {fn: choisirMaison, needServerInfo: true},
+  '!relierDiscord': {fn: relierDiscord, needServerInfo: false},
+  '!trouverDiscord': {fn: trouverDiscord, needServerInfo: false}
 }
 
 const searchCommand = (serverInfo, message) => {

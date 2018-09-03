@@ -28,3 +28,12 @@ module.exports.getHomework =
   ORDER BY date`
 
 module.exports.getAllNotifications = 'SELECT notif_name FROM notification'
+
+module.exports.searchDiscordByName =
+`SELECT discord_id FROM notification
+WHERE (moodle_firstname = $1 AND moodle_lastname = $2)
+OR (moodle_firstname = $2 AND moodle_lastname = $1)`
+
+module.exports.searchDiscordByMoodleUsername =
+`SELECT discord_id FROM notification
+WHERE moodle_login = $1`
