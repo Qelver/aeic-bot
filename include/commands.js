@@ -28,7 +28,7 @@ const ajoutDevoir = message => {
         args[3], // 3 Contenu
         message.author.id // 4 Id Discord auteur
       ]
-      if (params.every(x => x.length > 0)) {
+      if (params.every(x => (x && x.hasOwnProperty('length') && x.length > 0))) {
         await database.query(sqlQueries.addHomework, params)
         console.log(`Ajout d'un devoir par ${message.author.username}. Groupe : ${params[0]}`)
         message.channel.send(`**Groupe ${params[0]}** Un devoir a été ajouté ! par <@${params[4]}>.\n`
