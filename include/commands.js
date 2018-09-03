@@ -16,9 +16,9 @@ const aide = message =>
   message.channel.send(getBotMsg('aeic-bot-help'))
 
 // Ajoute un devoir pour un groupe
-// !ajoutDevoir tp1a | 2018-12-12 | Java | TP Breakout
-const ajoutDevoir = message => {
-  const args = util.getCommandArgs(message.content.replace('!ajoutDevoir', '').trim())
+// !ajouterDevoir tp1a | 2018-12-12 | Java | TP Breakout
+const ajouterDevoir = message => {
+  const args = util.getCommandArgs(message.content.replace('!ajouterDevoir', '').trim())
   if (args.length >= 4) {
     (async () => {
       const params = [
@@ -34,17 +34,17 @@ const ajoutDevoir = message => {
         message.channel.send(`**Groupe ${params[0]}** Un devoir a été ajouté ! par <@${params[4]}>.\n`
         + `Pour le \`${params[1]}\` en \`${params[2]}\`. Contenu : \`\`\`${params[3]}\`\`\``)
       }
-      else message.channel.send(getBotMsg('argument-invalide', message.author, '!ajoutDevoir'))
-    })().catch(err => util.catchedError(message, '!ajoutDevoir', err))
+      else message.channel.send(getBotMsg('argument-invalide', message.author, '!ajouterDevoir'))
+    })().catch(err => util.catchedError(message, '!ajouterDevoir', err))
   }
-  else message.channel.send(getBotMsg('manque-argument', message.author, '!ajoutDevoir'))
+  else message.channel.send(getBotMsg('manque-argument', message.author, '!ajouterDevoir'))
 }
 
 
 // Affiche les devoirs d'un groupe
-// !afficheDevoir tp1a
-const afficheDevoir = message => {
-  const groupName = message.content.replace('!afficheDevoir', '').trim()
+// !afficherDevoir tp1a
+const afficherDevoir = message => {
+  const groupName = message.content.replace('!afficherDevoir', '').trim()
   if (groupName.length > 0) {
     (async () => {
       const res = await database.query(sqlQueries.getHomework, [groupName])
@@ -66,9 +66,9 @@ const afficheDevoir = message => {
       }
       else // Aucun devoir pour ce groupe (ou il n'existe pas)
         message.channel.send(getBotMsg('aucun-devoir'))
-    })().catch(err => util.catchedError(message, '!afficheDevoir', err))
+    })().catch(err => util.catchedError(message, '!afficherDevoir', err))
   }
-  else message.channel.send(getBotMsg('manque-argument', message.author, '!afficheDevoir'))
+  else message.channel.send(getBotMsg('manque-argument', message.author, '!afficherDevoir'))
 }
 
 // Applique les rôles correspondants au groupe choisi
@@ -132,9 +132,9 @@ const choisirMaison = (message, serverInfo) => {
 
 
 // Affiche l'emploi du temps demandé. Params : Année d'étude, Groupe de TD, Groupe de Tp
-// !affichePlanning 1 | 1 | b
-const affichePlanning = message => {
-  const msgContent = message.content.replace('!affichePlanning', '').trim()
+// !afficherPlanning 1 | 1 | b
+const afficherPlanning = message => {
+  const msgContent = message.content.replace('!afficherPlanning', '').trim()
   const args = util.getCommandArgs(msgContent)
   if (args.length >= 3) {
     if (parseInt(args[0], 10) && parseInt(args[1], 10)) {
@@ -143,16 +143,28 @@ const affichePlanning = message => {
       args[2] = args[2].toUpperCase()
       recupererEdt(args[0], args[1], args[2])
         .then(res => {
-          const msg = `Voici l'emploi du temps pour Année ${args[0]} TD${args[1]} TP${args[2]} : `
-          const scheduleStr = 'TODO'
-          // TODO: Afficher le planning
-          message.channel.send(`${msg}${scheduleStr}`)
+          if (res && res.length > 0) {
+            const msg = `Voici l'emploi du temps pour Année ${args[0]} TD${args[1]} TP${args[2]} :\n`
+            let scheduleStr = ''
+
+            const configDay = {year: 'numeric', month: '2-digit', day: '2-digit'}
+            const configHour = {hour: '2-digit', minute: '2-digit'}
+            res.forEach(x => {
+              const day = new Date(x.dateDebut).toLocaleString('fr-fr', configDay)
+              const start = new Date(x.dateDebut).toLocaleString('fr-fr', configHour)
+              const end = new Date(x.dateFin).toLocaleString('fr-fr', configHour)
+              scheduleStr += `Le \`${day}\`. De ${start} à ${end} : `
+              scheduleStr += `${x.groupe} de ${x.nom} en ${x.salle} par ${x.enseignant}.\n`
+            })
+            message.channel.send(`${msg}${scheduleStr}`.trim())
+          }
+          else message.channel.send(getBotMsg('planning-vide', message.author, '!afficherPlanning'))
         })
-        .catch(err => util.catchedError(message, '!affichePlanning', err))
+        .catch(err => util.catchedError(message, '!afficherPlanning', err))
     }
-    else message.channel.send(getBotMsg('argument-invalide', message.author, '!affichePlanning'))
+    else message.channel.send(getBotMsg('argument-invalide', message.author, '!afficherPlanning'))
   }
-  else message.channel.send(getBotMsg('manque-argument', message.author, '!affichePlanning'))
+  else message.channel.send(getBotMsg('manque-argument', message.author, '!afficherPlanning'))
 }
 
 // Valide un code d'appairage Discord-Moodle https://github.com/rigwild/register-discord
@@ -221,9 +233,9 @@ const trouverMail = message => {
     (async () => {
       const res = await database.query(sqlQueries.searchMail, [toSearch])
       if (res.rowCount > 0)
-        message.channel.send(`L'adresse mail de "${toSearch}" est la suivante : \`${res.rows[0].discord_id}\`.`)
+        message.channel.send(`L'adresse mail de M./Mme. "${toSearch}" est la suivante : \`${res.rows[0].mail_address}\``)
       else
-        message.channel.send(`L'adresse mail de "${toSearch}" n'a pas été trouvé.`)
+        message.channel.send(`L'adresse mail de M./Mme. "${toSearch}" n'a pas été trouvé.`)
     })().catch(err => util.catchedError(message, '!trouverMail', err))
   }
   else message.channel.send(getBotMsg('manque-argument', message.author, '!trouverMail'))
@@ -232,9 +244,9 @@ const trouverMail = message => {
 
 const commandsList = {
   '!aide': {fn: aide, needServerInfo: false},
-  '!ajoutDevoir': {fn: ajoutDevoir, needServerInfo: false},
-  '!afficheDevoir': {fn: afficheDevoir, needServerInfo: false},
-  '!affichePlanning': {fn: affichePlanning, needServerInfo: false},
+  '!ajouterDevoir': {fn: ajouterDevoir, needServerInfo: false},
+  '!afficherDevoir': {fn: afficherDevoir, needServerInfo: false},
+  '!afficherPlanning': {fn: afficherPlanning, needServerInfo: false},
   '!choisirGroupe': {fn: choisirGroupe, needServerInfo: true},
   '!choisirMaison': {fn: choisirMaison, needServerInfo: true},
   '!relierDiscord': {fn: relierDiscord, needServerInfo: false},

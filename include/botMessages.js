@@ -29,11 +29,11 @@ Voici la liste des commandes de l'AEIC-BOT :
 \`!relierDiscord\` : Relier son compte Discord à son compte Moodle (Compte d'IUT). Lien : https://register-discord.now.sh/
 \`!trouverDiscord\` : Mentionnez un membre du serveur Discord via son identifiant IUT \`nom.prenom\`, \`nom prénom\` ou \`prénom nom\` Ex : \`!trouverDiscord sauvage.antoine\`
 
-\`!affichePlanning\` : Afficher un planning. Ex : \`!affichePlanning 1 | 2 | c\` (Année 1, TD2, TPC)
+\`!afficherPlanning\` : Afficher un planning. Ex : \`!afficherPlanning 1 | 2 | c\` (Année 1, TD2, TPC)
 \`!trouverMail\`: Afficher le mail d'un professeur de l'IUT via son nom de famille. Ex : \`!trouverMail synave\`
 
-\`!ajoutDevoir\` : Ajouter un devoir. Ex : \`!ajoutDevoir tp1a | 2018-12-27 | Java | TP Breakout\`
-\`!afficheDevoir\` : Afficher la liste des devoirs. Ex : \`!afficheDevoir tp1a\`
+\`!ajouterDevoir\` : Ajouter un devoir. Ex : \`!ajouterDevoir tp1a | 2018-12-27 | Java | TP Breakout\`
+\`!afficherDevoir\` : Afficher la liste des devoirs. Ex : \`!afficherDevoir tp1a\`
 
 Questions ? Suggestions ? MP le développeur de l'AEIC-BOT <@${devDiscordId}>.
 Repository GitHub du bot (Node.js) : https://github.com/rigwild/aeic-bot.`
@@ -53,6 +53,7 @@ const botMsg = {
   'aucun-devoir': 'Il n\'y a aucun devoir **enregistré** pour ce groupe.' + needHelp,
   'relier-discord-ok': 'Ton profil Discord a bien été relié à ton compte Moodle.',
   'relier-discord-fail': 'Le code d\'appairage Discord-Moodle est invalide.',
+  'planning-vide': 'Le planning pour ce groupe est vide. **Attention** ! Cela peut être un bug.',
   'erreur-non-decrite': 'Une erreur non décrite s\'est produite. Help <@' + devDiscordId + '> ! Commande : `#commandName`.',
   'erreur-non-decrite-log': 'Une erreur non décrite s\'est produite. Help <@' + devDiscordId + '> ! Commande : `#commandName#`. ```#logMessage#```'
 }
