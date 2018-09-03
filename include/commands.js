@@ -1,6 +1,6 @@
 'use strict'
 
-const { database } = require('../config')
+const { database, devDiscordId, momentFormat } = require('../config')
 const util = require('./util')
 const { getBotMsg } = require('./botMessages')
 const { recupererEdt } = require('./getSchedule')
@@ -8,6 +8,7 @@ const sqlQueries = require('./sqlQueries')
 const https = require('https')
 const querystring = require('querystring')
 const url = require('url')
+const moment = require('moment')
 
 
 // Affiche l'aide du bot
@@ -21,9 +22,13 @@ const ajouterDevoir = message => {
   const args = util.getCommandArgs(message.content.replace('!ajouterDevoir', '').trim())
   if (args.length >= 4) {
     (async () => {
+      const date = moment(args[1], momentFormat)
+      if (!date.isValid())
+        return message.channel.send(getBotMsg('mauvais-format-date', message.author))
+
       const params = [
         args[0], // 0 Groupe
-        util.convertDateformat(args[1]), // 1 Date
+        date.toDate().toDateString(), // 1 Date
         args[2], // 2 Cours
         args[3], // 3 Contenu
         message.author.id // 4 Id Discord auteur
@@ -32,7 +37,8 @@ const ajouterDevoir = message => {
         await database.query(sqlQueries.addHomework, params)
         console.log(`Ajout d'un devoir par ${message.author.username}. Groupe : ${params[0]}`)
         message.channel.send(`**Groupe ${params[0]}** Un devoir a été ajouté ! par <@${params[4]}>.\n`
-        + `Pour le \`${params[1]}\` en \`${params[2]}\`. Contenu : \`\`\`${params[3]}\`\`\``)
+        + `Pour le \`${date.format('DD/MM/YYYY')}\` en \`${params[2]}\`. `
+        + `Contenu : \`\`\`${params[3]}\`\`\``)
       }
       else message.channel.send(getBotMsg('argument-invalide', message.author, '!ajouterDevoir'))
     })().catch(err => util.catchedError(message, '!ajouterDevoir', err))
@@ -51,7 +57,7 @@ const afficherDevoir = message => {
       if (res.rowCount > 0) { // Il y a des devoirs pour ce groupe
         let msg = `**Groupe ${groupName}**. Liste des devoirs :\n`
         res.rows.forEach(homework => {
-          const date = util.convertDateformat(homework.date)
+          const date = moment(homework.date, momentFormat).format('DD/MM/YYYY')
 
           // On ajoute le devoir au message
           msg += `Auteur : <@${homework.author_discord_id}>. `
@@ -65,6 +71,22 @@ const afficherDevoir = message => {
     })().catch(err => util.catchedError(message, '!afficherDevoir', err))
   }
   else message.channel.send(getBotMsg('manque-argument', message.author, '!afficherDevoir'))
+}
+
+// Vider les devoirs d'un groupe (Faisable uniquement par le développeur du bot par sécurité)
+// !viderDevoir tp1a
+const viderDevoir = message => {
+  if (message.author.id === devDiscordId) {
+    const groupName = message.content.replace('!viderDevoir', '').trim()
+    if (groupName.length > 0) {
+      (async () => {
+        await database.query(sqlQueries.clearHomework, [groupName])
+        message.channel.send(`Les devoirs du groupe \`${groupName}\` ont été supprimés.`)
+      })().catch(err => util.catchedError(message, '!viderDevoir', err))
+    }
+    else message.channel.send(getBotMsg('manque-argument', message.author, '!viderDevoir'))
+  }
+  else message.channel.send(getBotMsg('commande-developpeur', message.author, '!viderDevoir'))
 }
 
 // Applique les rôles correspondants au groupe choisi
@@ -143,11 +165,10 @@ const afficherPlanning = message => {
             const msg = `Voici l'emploi du temps pour Année ${args[0]} TD${args[1]} TP${args[2]} :\n`
             let scheduleStr = ''
 
-            const configHour = {hour: '2-digit', minute: '2-digit', hour12: false}
             res.forEach(x => {
-              const day = util.convertDateformat(x.dateDebut)
-              const hourStart = new Date(x.dateDebut).toLocaleString('fr-FR', configHour)
-              const hourEnd = new Date(x.dateFin).toLocaleString('fr-FR', configHour)
+              const day = moment(x.dateDebut).format('DD/MM/YYYY')
+              const hourStart = moment(x.dateDebut).format('HH[h]mm')
+              const hourEnd = moment(x.dateFin).format('HH[h]mm')
               scheduleStr += `Le ${day}, de ${hourStart} à ${hourEnd} : `
               scheduleStr += `${x.groupe} de \`${x.nom}\` en \`${x.salle}\` par ${x.enseignant}.\n`
             })
@@ -246,7 +267,8 @@ const commandsList = {
   '!choisirMaison': {fn: choisirMaison, needServerInfo: true},
   '!relierDiscord': {fn: relierDiscord, needServerInfo: false},
   '!trouverDiscord': {fn: trouverDiscord, needServerInfo: false},
-  '!trouverMail': {fn: trouverMail, needServerInfo: false}
+  '!trouverMail': {fn: trouverMail, needServerInfo: false},
+  '!viderDevoir': {fn: viderDevoir, needServerInfo: false}
 }
 
 const searchCommand = (serverInfo, message) => {

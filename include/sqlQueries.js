@@ -39,3 +39,5 @@ module.exports.searchDiscordByMoodleUsername =
 WHERE LOWER(moodle_login) = LOWER($1)`
 
 module.exports.searchMail = 'SELECT mail_address FROM mail_prof WHERE LOWER(prof_name) = LOWER($1)'
+
+module.exports.clearHomework = 'DELETE FROM homework WHERE LOWER(group_name) = LOWER($1)'

@@ -52,8 +52,10 @@ const botMsg = {
   'argument-invalide': 'Les arguments entrés pour la commande `#commandName#` sont invalides.' + needHelp,
   'aucun-devoir': 'Il n\'y a aucun devoir **enregistré** pour ce groupe.' + needHelp,
   'relier-discord-ok': 'Ton profil Discord a bien été relié à ton compte Moodle.',
-  'relier-discord-fail': 'Le code d\'appairage Discord-Moodle est invalide.',
-  'planning-vide': 'Le planning pour ce groupe est vide. **Attention** ! Cela peut être un bug.',
+  'relier-discord-fail': 'Le code d\'appairage Discord-Moodle est invalide.' + needHelp,
+  'planning-vide': 'Le planning pour ce groupe est vide. **Attention** ! Cela peut être un bug.' + needHelp,
+  'commande-developpeur': 'La commande `#commandName#` est réservée au développeur du bot. <@' + devDiscordId + '>',
+  'mauvais-format-date': 'Le format de date est incorrect.',
   'erreur-non-decrite': 'Une erreur non décrite s\'est produite. Help <@' + devDiscordId + '> ! Commande : `#commandName`.',
   'erreur-non-decrite-log': 'Une erreur non décrite s\'est produite. Help <@' + devDiscordId + '> ! Commande : `#commandName#`. ```#logMessage#```'
 }

@@ -12,6 +12,8 @@ const linkIcs = process.env.linkIcs
 const { Pool } = require('pg')
 const database = new Pool()
 
+const momentFormat = ['DD-MM-YYYY', 'YYYY-MM-DD']
+
 module.exports = {
   discordAuthToken,
   serverName,
@@ -19,5 +21,6 @@ module.exports = {
   devDiscordId,
   configNotificationsChannelId,
   homeChannelId,
-  database
+  database,
+  momentFormat
 }

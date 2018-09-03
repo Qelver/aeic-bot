@@ -75,21 +75,11 @@ const catchedError = (message, commandName, err) => {
   console.error(`Erreur de la commande '${commandName}' :\n${err.stack}`)
 }
 
-// Convertir une date vers le format DD/MM/YYYY. toLocalString() a des problèmes avec la locale fr-FR.
-const convertDateformat = date => {
-  let res = new Date(date)
-  console.log(date, res, res.getDay())
-  let day = res.getDate() < 10 ? '0' + res.getDate() : res.getDate()
-  let month = (res.getMonth() + 1) < 10 ? '0' + (res.getMonth() + 1) : res.getMonth() + 1
-  return res !== 'Invalid Date' ? `${day}/${month}/${res.getFullYear()}` : null
-}
-
 module.exports = {
   isInRoleNameChannel,
   getCommandArgs,
   setRole,
   getAvailableGroupsStrErr,
   getAvailableMaisonsStrErr,
-  catchedError,
-  convertDateformat
+  catchedError
 }
