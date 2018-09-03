@@ -37,3 +37,5 @@ OR (moodle_firstname = $2 AND moodle_lastname = $1)`
 module.exports.searchDiscordByMoodleUsername =
 `SELECT discord_id FROM notification
 WHERE moodle_login = $1`
+
+module.exports.searchMail = 'SELECT mail_address FROM mail_prof WHERE prof_name = $1'

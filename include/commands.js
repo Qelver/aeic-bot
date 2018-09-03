@@ -12,7 +12,7 @@ const url = require('url')
 
 // Affiche l'aide du bot
 // !aide
-const aeicBotHelp = message =>
+const aide = message =>
   message.channel.send(getBotMsg('aeic-bot-help'))
 
 // Ajoute un devoir pour un groupe
@@ -213,15 +213,33 @@ const trouverDiscord = message => {
   else message.channel.send(getBotMsg('manque-argument', message.author, '!trouverDiscord'))
 }
 
+// Trouve l'adresse mail d'un professeur
+// !trouverMail synave
+const trouverMail = message => {
+  const toSearch = message.content.replace('!trouverMail', '').trim()
+  if (toSearch) {
+    (async () => {
+      const res = await database.query(sqlQueries.searchMail, [toSearch])
+      if (res.rowCount > 0)
+        message.channel.send(`L'adresse mail de "${toSearch}" est la suivante : \`${res.rows[0].discord_id}\`.`)
+      else
+        message.channel.send(`L'adresse mail de "${toSearch}" n'a pas été trouvé.`)
+    })().catch(err => util.catchedError(message, '!trouverMail', err))
+  }
+  else message.channel.send(getBotMsg('manque-argument', message.author, '!trouverMail'))
+}
+
+
 const commandsList = {
-  '!aide': {fn: aeicBotHelp, needServerInfo: false},
+  '!aide': {fn: aide, needServerInfo: false},
   '!ajoutDevoir': {fn: ajoutDevoir, needServerInfo: false},
   '!afficheDevoir': {fn: afficheDevoir, needServerInfo: false},
   '!affichePlanning': {fn: affichePlanning, needServerInfo: false},
   '!choisirGroupe': {fn: choisirGroupe, needServerInfo: true},
   '!choisirMaison': {fn: choisirMaison, needServerInfo: true},
   '!relierDiscord': {fn: relierDiscord, needServerInfo: false},
-  '!trouverDiscord': {fn: trouverDiscord, needServerInfo: false}
+  '!trouverDiscord': {fn: trouverDiscord, needServerInfo: false},
+  '!trouverMail': {fn: trouverMail, needServerInfo: false}
 }
 
 const searchCommand = (serverInfo, message) => {
