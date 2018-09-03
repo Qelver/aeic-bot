@@ -24,18 +24,18 @@ module.exports.addHomework =
 
 module.exports.getHomework =
   `SELECT * FROM homework
-  WHERE LOWER(group_name) = LOWER($1) AND date > current_date
+  WHERE LOWER(group_name) = LOWER($1) AND date > current_date + 1
   ORDER BY date`
 
 module.exports.getAllNotifications = 'SELECT notif_name FROM notification'
 
 module.exports.searchDiscordByName =
-`SELECT discord_id FROM notification
-WHERE (moodle_firstname = $1 AND moodle_lastname = $2)
-OR (moodle_firstname = $2 AND moodle_lastname = $1)`
+`SELECT discord_id FROM discord_user
+WHERE (LOWER(moodle_firstname) = LOWER($1) AND LOWER(moodle_lastname) = LOWER($2))
+OR (LOWER(moodle_firstname) = LOWER($2) AND LOWER(moodle_lastname) = LOWER($1))`
 
 module.exports.searchDiscordByMoodleUsername =
-`SELECT discord_id FROM notification
-WHERE moodle_login = $1`
+`SELECT discord_id FROM discord_user
+WHERE LOWER(moodle_login) = LOWER($1)`
 
-module.exports.searchMail = 'SELECT mail_address FROM mail_prof WHERE prof_name = $1'
+module.exports.searchMail = 'SELECT mail_address FROM mail_prof WHERE LOWER(prof_name) = LOWER($1)'

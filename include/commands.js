@@ -148,7 +148,7 @@ const afficherPlanning = message => {
             let scheduleStr = ''
 
             const configDay = {year: 'numeric', month: '2-digit', day: '2-digit'}
-            const configHour = {hour: '2-digit', minute: '2-digit'}
+            const configHour = {hour: '2-digit', minute: '2-digit', hour12: false}
             res.forEach(x => {
               const day = new Date(x.dateDebut).toLocaleString('fr-fr', configDay)
               const start = new Date(x.dateDebut).toLocaleString('fr-fr', configHour)
@@ -204,21 +204,21 @@ const relierDiscord = message => {
 const trouverDiscord = message => {
   const toSearch = message.content.replace('!trouverDiscord', '').trim()
   if (toSearch) {
-    const separated = toSearch.split(' ')
+    const separated = toSearch.split(' ');
     (async () => {
       if (separated.length === 2) { // Format "nom prénom" ou "prénom nom"
         const res = await database.query(sqlQueries.searchDiscordByName, [separated[0], separated[1]])
         if (res.rowCount > 0)
-          message.channel.send(`Le profil Discord de ${separated[0]} ${separated[1]} est <@${res.rows[0].discord_id}`)
+          message.channel.send(`Le profil Discord de "${separated[0]} ${separated[1]}" est <@${res.rows[0].discord_id}>.`)
         else
-          message.channel.send(`Le profil Discord de ${separated[0]} ${separated[1]} n'a pas été trouvé.`)
+          message.channel.send(`Le profil Discord de "${separated[0]} ${separated[1]}" n'a pas été trouvé.`)
       }
       else { // Format "nom.prenom"
         const res = await database.query(sqlQueries.searchDiscordByMoodleUsername, [toSearch])
         if (res.rowCount > 0)
-          message.channel.send(`Le profil Discord de ${toSearch} est <@${res.rows[0].discord_id}`)
+          message.channel.send(`Le profil Discord de "${toSearch}" est <@${res.rows[0].discord_id}>.`)
         else
-          message.channel.send(`Le profil Discord de ${toSearch} n'a pas été trouvé.`)
+          message.channel.send(`Le profil Discord de "${toSearch}" n'a pas été trouvé.`)
       }
     })().catch(err => util.catchedError(message, '!trouverDiscord', err))
   }
