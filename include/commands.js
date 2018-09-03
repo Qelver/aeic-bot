@@ -99,32 +99,32 @@ const choisirGroupe = (message, serverInfo) => {
 }
 
 
-// Applique le rôle correspondant au clan choisi
-// !choisirClan omega
-const choisirClan = (message, serverInfo) => {
-  const clanToAdd = message.content.replace('!choisirClan', '').trim()
-  if (clanToAdd) {
+// Applique le rôle correspondant au maison choisi
+// !choisirMaison omega
+const choisirMaison = (message, serverInfo) => {
+  const maisonToAdd = message.content.replace('!choisirMaison', '').trim()
+  if (maisonToAdd) {
     (async () => {
 
-      const res = await database.query(sqlQueries.searchClan, [clanToAdd])
-      if (res.rowCount > 0) { // Le clan existe
-        const res2 = await database.query(sqlQueries.getAllClans)
-        // On supprime les roles des autres clans
+      const res = await database.query(sqlQueries.searchMaison, [maisonToAdd])
+      if (res.rowCount > 0) { // La maison existe
+        const res2 = await database.query(sqlQueries.getAllMaisons)
+        // On supprime les roles des autres maisons
         const rolesToRemove = res2.rows
-          .map(x => x.clan_name)
-          .filter(x => x.toLowerCase() !== clanToAdd.toLowerCase())
+          .map(x => x.maison_name)
+          .filter(x => x.toLowerCase() !== maisonToAdd.toLowerCase())
 
         await util.setRole(serverInfo, message.author, false, ...rolesToRemove)
 
         // On ajoute le nouveau rôle
-        await util.setRole(serverInfo, message.author, true, ...res.rows.map(x => x.clan_name))
-        message.channel.send(getBotMsg('role-clan-ajoute', message.author))
+        await util.setRole(serverInfo, message.author, true, ...res.rows.map(x => x.maison_name))
+        message.channel.send(getBotMsg('role-maison-ajoute', message.author))
       }
-      else // Le clan n'existe pas, on avertis le membre en listant les clans possibles
-        message.channel.send(await util.getAvailableClansStrErr(message))
-    })().catch(err => util.catchedError(message, '!choisirClan', err))
+      else // Le maison n'existe pas, on avertis le membre en listant les maisons possibles
+        message.channel.send(await util.getAvailableMaisonsStrErr(message))
+    })().catch(err => util.catchedError(message, '!choisirMaison', err))
   }
-  else message.channel.send(getBotMsg('manque-argument', message.author, '!choisirClan'))
+  else message.channel.send(getBotMsg('manque-argument', message.author, '!choisirMaison'))
 }
 
 
@@ -158,7 +158,7 @@ const commandsList = {
   '!afficheDevoir': {fn: afficheDevoir, needServerInfo: false},
   '!affichePlanning': {fn: affichePlanning, needServerInfo: false},
   '!choisirGroupe': {fn: choisirGroupe, needServerInfo: true},
-  '!choisirClan': {fn: choisirClan, needServerInfo: true}
+  '!choisirMaison': {fn: choisirMaison, needServerInfo: true}
 }
 
 const searchCommand = (serverInfo, message) => {
