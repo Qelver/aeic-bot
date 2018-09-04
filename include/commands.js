@@ -188,10 +188,13 @@ const afficherPlanning = message => {
 const relierDiscord = message => {
   const code = message.content.replace(/!relierDiscord/i, '').trim()
   if (code) {
-    const postData = querystring.stringify({code})
+    const postData = querystring.stringify({
+      pairCode: code,
+      discordId: message.author.id
+    })
     const options = {
-      hostname: url.parse('https://register-discord.now.sh/').hostname,
-      path: url.parse('https://register-discord.now.sh/').path,
+      hostname: url.parse('https://register-discord.now.sh/linkDiscord').hostname,
+      path: url.parse('https://register-discord.now.sh/linkDiscord').path,
       port: 443,
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
