@@ -6,12 +6,12 @@ const { linkIcs } = require('../config')
 const https = require('https')
 
 const iso8601toUTCDate = textToParse =>
-  new Date(Date.UTC(parseInt(textToParse.slice(0, 4)),
-    parseInt(textToParse.slice(4, 6)) - 1,
-    parseInt(textToParse.slice(6, 8)),
-    parseInt(textToParse.slice(9, 11)),
-    parseInt(textToParse.slice(11, 13)),
-    parseInt(textToParse.slice(13, 15))))
+  new Date(Date.UTC(parseInt(textToParse.slice(0, 4), 10),
+    parseInt(textToParse.slice(4, 6), 10) - 1,
+    parseInt(textToParse.slice(6, 8), 10),
+    parseInt(textToParse.slice(9, 11), 10),
+    parseInt(textToParse.slice(11, 13), 10),
+    parseInt(textToParse.slice(13, 15), 10)))
 
 const getEDT = () =>
   new Promise((resolve, reject) => {
@@ -80,9 +80,7 @@ const getEDT = () =>
       else
         reject(new Error(`La requête a échouée : Code d'erreur ${res.statusCode}.`))
     })
-      .on('error', (err) => {
-        reject(err)
-      })
+      .on('error', err => reject(err))
   })
 
 const recupererEdt = (annee, numTd, numTp) => {

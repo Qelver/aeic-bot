@@ -1,0 +1,42 @@
+retirer parametres avec |
+bienvenue par mp
+
+
+
+
+
+
+
+Feature "demande de nouvel horaire" : 
+-CreerDemandeDeNouvelHoraire(jour, horaire, groupe, motif) : Envoi une demande de nouvelle horaire à l'enseignant concerné qui pourra répondre positivement ou négativement.
+La demande doit être faite au moins 2/3 jours à l'avance pour éviter d'aller à l'encontre du règlement de l'iut.
+Si pas de réponse à J-1, elle est automatiquement refusée.
+(à voir : Elle ne peut être effectuée que par un délégué de TP)
+- VoirDemandesDeNouvelHoraireOuvertes() : Permet de voir les demandes qui n'ont pas encore reçu de réponse avec le nombre de soutiens
+- SoutenirDemande(idDemande) : Permet d'ajouter un  "+1" à une demande. Un soutien par demande par étudiant max
+
+Les plus : 
+- ça permet d'éviter des journées 8h30-10h puis reprise à 14h30 par exemple et pouvoir changer d'horaire si le prof concerné est difficilement trouvable à l'IUT 
+
+Les moins : 
+- Faut trouver un moyen de contact qui satisfasse les profs (ils ne sont pas tous sur discord)
+- L'utilisation peut être abusive, penser à une limitation de x demandes par mois par tp par exemple
+
+
+
+Feature "inscription help center" :
+- sinscrireCetteSemaine(matière?) : Permet à un étudiant de s'inscrire à la séance du help center de la semaine avec une matière de préférence (optionnel)
+- seDesinscrireCetteSemaine() : même concept mais dans l'autre sens
+
+- aiderCetteSemaine(matière, sujet?) : Permet à un étudiant de s'inscrire à la séance du help center de la semaine en tant que Helper, il y spécifie sa matière et éventuellement son sujet s'il en a un ( exemple : !aiderCetteSemaine java | tp breakout )
+- aiderRecurent(matière, sujet?) : Permet à un étudiant de s'inscrire automatiquement à toutes les séances du help center en tant que Helper, il y spécifie sa matière et éventuellement son sujet. Si il n'est pas là une semaine, il peut utiliser nePlusAiderCetteSemaine()
+- nePlusAiderCetteSemaine() : désinscription du helper pour la séance à suivre
+- voirLesInscritsDeLaSemaine() : Utile pour les Helper, pour voir si il y a des demandes de matière spécifiques
+
+Les plus : 
+- Automatise les inscriptions (clairement c'est ce qu'il manquait l'année dernière)
+- Permet d'avoir un listing propre des Helpers et inscrits (utile pour le décompte sur la moyenne en fin de semestre)
+- La visibilité est plus grande, même des gens qui ne sont plus dans l'IUT peuvent éventuellement s'inscrire en tant qu'Helper
+
+Les moins : 
+- Risque d'abus dans les inscriptions ( inscrit mais non présent ) juste pour les points dans la moyenne. Il faudra continuer les feuilles de présence

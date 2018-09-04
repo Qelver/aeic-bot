@@ -15,7 +15,9 @@ Commence par choisir ton groupe de classe et ta maison d'asso :
 \`!choisirMaison omega\` (Omega, Theta, Sigma ou Delta)
 
 Ensuite, pense à relier ton compte Moodle (Compte IUT) à ton compte Discord pour pouvoir être retrouvé facilement sur ce serveur : https://register-discord.now.sh/
-Enfin, **Configure tes notifications** dans le channel <#${configNotificationsChannelId}>.`
+Enfin, **Configure tes notifications** dans le channel <#${configNotificationsChannelId}>.
+
+Pour des raisons de lisibilité du chat, l'ensemble des commandes est répertorié ici : **https://aeic.now.sh/**.`
 
 const helpMsg =
 `Pour configurer tes notifications rends-toi dans le channel <#${configNotificationsChannelId}>.
@@ -25,15 +27,9 @@ Voici la liste des commandes de l'AEIC-BOT :
 
 \`!choisirGroupe\` : Choisir son groupe de classe. Ex : \`!choisirGroupe tp1a\`
 \`!choisirMaison\` : Choisir sa maison. Ex : \`!choisirMaison Omega\`. Maisons disponibles : Omega, Theta, Sigma ou Delta.
-
-\`!relierDiscord\` : Relier son compte Discord à son compte Moodle (Compte d'IUT). Lien : https://register-discord.now.sh/
 \`!trouverDiscord\` : Mentionnez un membre du serveur Discord via son identifiant IUT \`nom.prenom\`, \`nom prénom\` ou \`prénom nom\` Ex : \`!trouverDiscord sauvage.antoine\`
 
-\`!afficherPlanning\` : Afficher un planning. Ex : \`!afficherPlanning 1 | 2 | c\` (Année 1, TD2, TPC)
-\`!trouverMail\`: Afficher le mail d'un professeur de l'IUT via son nom de famille. Ex : \`!trouverMail synave\`
-
-\`!ajouterDevoir\` : Ajouter un devoir. Ex : \`!ajouterDevoir tp1a | 2018-12-27 | Java | TP Breakout\`
-\`!afficherDevoir\` : Afficher la liste des devoirs. Ex : \`!afficherDevoir tp1a\`
+Pour des raisons de lisibilité du chat, l'ensemble des commandes est répertorié ici : **https://aeic.now.sh/**.
 
 Questions ? Suggestions ? MP le développeur de l'AEIC-BOT <@${devDiscordId}>.
 Repository GitHub du bot (Node.js) : https://github.com/rigwild/aeic-bot.`

@@ -10,7 +10,8 @@
     "url": "https://github.com/rigwild/aeic-bot.git"
   },
   "scripts": {
-    "start": "node bot.js"
+    "start": "node bot.js",
+    "deployDoc": "cd ./commandsDoc && now --public && now alias"
   },
   "license": "MIT",
   "dependencies": {

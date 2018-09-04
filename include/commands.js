@@ -19,7 +19,7 @@ const aide = message =>
 // Ajoute un devoir pour un groupe
 // !ajouterDevoir tp1a | 2018-12-12 | Java | TP Breakout
 const ajouterDevoir = message => {
-  const args = util.getCommandArgs(message.content.replace('!ajouterDevoir', '').trim())
+  const args = util.getCommandArgs(message.content.replace(/!ajouterDevoir/i, '').trim())
   if (args.length >= 4) {
     (async () => {
       const date = moment(args[1], momentFormat)
@@ -50,7 +50,7 @@ const ajouterDevoir = message => {
 // Affiche les devoirs d'un groupe
 // !afficherDevoir tp1a
 const afficherDevoir = message => {
-  const groupName = message.content.replace('!afficherDevoir', '').trim()
+  const groupName = message.content.replace(/!afficherDevoir/i, '').trim()
   if (groupName.length > 0) {
     (async () => {
       const res = await database.query(sqlQueries.getHomework, [groupName])
@@ -77,7 +77,7 @@ const afficherDevoir = message => {
 // !viderDevoir tp1a
 const viderDevoir = message => {
   if (message.author.id === devDiscordId) {
-    const groupName = message.content.replace('!viderDevoir', '').trim()
+    const groupName = message.content.replace(/!viderDevoir/i, '').trim()
     if (groupName.length > 0) {
       (async () => {
         await database.query(sqlQueries.clearHomework, [groupName])
@@ -92,7 +92,7 @@ const viderDevoir = message => {
 // Applique les rôles correspondants au groupe choisi
 // !choisirGroupe tp1a
 const choisirGroupe = (message, serverInfo) => {
-  const groupToAdd = message.content.replace('!choisirGroupe', '').trim()
+  const groupToAdd = message.content.replace(/!choisirGroupe/i, '').trim()
   if (groupToAdd) {
     (async () => {
       const res = await database.query(sqlQueries.getRolesOfGroup, [groupToAdd])
@@ -123,7 +123,7 @@ const choisirGroupe = (message, serverInfo) => {
 // Applique le rôle correspondant au maison choisi
 // !choisirMaison omega
 const choisirMaison = (message, serverInfo) => {
-  const maisonToAdd = message.content.replace('!choisirMaison', '').trim()
+  const maisonToAdd = message.content.replace(/!choisirMaison/i, '').trim()
   if (maisonToAdd) {
     (async () => {
 
@@ -152,7 +152,7 @@ const choisirMaison = (message, serverInfo) => {
 // Affiche l'emploi du temps demandé. Params : Année d'étude, Groupe de TD, Groupe de Tp
 // !afficherPlanning 1 | 1 | b
 const afficherPlanning = message => {
-  const msgContent = message.content.replace('!afficherPlanning', '').trim()
+  const msgContent = message.content.replace(/!afficherPlanning/i, '').trim()
   const args = util.getCommandArgs(msgContent)
   if (args.length >= 3) {
     if (parseInt(args[0], 10) && parseInt(args[1], 10)) {
@@ -186,7 +186,7 @@ const afficherPlanning = message => {
 // Valide un code d'appairage Discord-Moodle https://github.com/rigwild/register-discord
 // !relierDiscord code
 const relierDiscord = message => {
-  const code = message.content.replace('!relierDiscord', '').trim()
+  const code = message.content.replace(/!relierDiscord/i, '').trim()
   if (code) {
     const postData = querystring.stringify({code})
     const options = {
@@ -218,23 +218,23 @@ const relierDiscord = message => {
 // Mentionne un membre du serveur via son "nom.prenom" ou "nom prénom" ou "prénom nom"
 // !trouverDiscord sauvage.antoine
 const trouverDiscord = message => {
-  const toSearch = message.content.replace('!trouverDiscord', '').trim()
+  const toSearch = message.content.replace(/!trouverDiscord/i, '').trim()
   if (toSearch) {
     const separated = toSearch.split(' ');
     (async () => {
       if (separated.length === 2) { // Format "nom prénom" ou "prénom nom"
         const res = await database.query(sqlQueries.searchDiscordByName, [separated[0], separated[1]])
         if (res.rowCount > 0)
-          message.channel.send(`Le profil Discord de "${separated[0]} ${separated[1]}" est <@${res.rows[0].discord_id}>.`)
+          message.channel.send(`Le profil Discord de "${separated[0]} ${separated[1]}" est <@${res.rows[0].discord_id}>. Reliez votre Discord à votre compte Moodle ici : https://register-discord.now.sh/`)
         else
-          message.channel.send(`Le profil Discord de "${separated[0]} ${separated[1]}" n'a pas été trouvé.`)
+          message.channel.send(`Le profil Discord de "${separated[0]} ${separated[1]}" n'a pas été trouvé. Reliez votre Discord à votre compte Moodle ici : https://register-discord.now.sh/`)
       }
       else { // Format "nom.prenom"
         const res = await database.query(sqlQueries.searchDiscordByMoodleUsername, [toSearch])
         if (res.rowCount > 0)
-          message.channel.send(`Le profil Discord de "${toSearch}" est <@${res.rows[0].discord_id}>.`)
+          message.channel.send(`Le profil Discord de "${toSearch}" est <@${res.rows[0].discord_id}>. Reliez votre Discord à votre compte Moodle ici : https://register-discord.now.sh/`)
         else
-          message.channel.send(`Le profil Discord de "${toSearch}" n'a pas été trouvé.`)
+          message.channel.send(`Le profil Discord de "${toSearch}" n'a pas été trouvé. Reliez votre Discord à votre compte Moodle ici : https://register-discord.now.sh/`)
       }
     })().catch(err => util.catchedError(message, '!trouverDiscord', err))
   }
@@ -244,7 +244,7 @@ const trouverDiscord = message => {
 // Trouve l'adresse mail d'un professeur
 // !trouverMail synave
 const trouverMail = message => {
-  const toSearch = message.content.replace('!trouverMail', '').trim()
+  const toSearch = message.content.replace(/!trouverMail/i, '').trim()
   if (toSearch) {
     (async () => {
       const res = await database.query(sqlQueries.searchMail, [toSearch])
@@ -272,7 +272,9 @@ const commandsList = {
 }
 
 const searchCommand = (serverInfo, message) => {
-  const usedCommand = Object.keys(commandsList).find(key => message.content.startsWith(key))
+  const usedCommand = Object.keys(commandsList).find(key =>
+    message.content.toLowerCase().startsWith(key.toLowerCase()))
+
   if (usedCommand)
     commandsList[usedCommand].needServerInfo
       ? commandsList[usedCommand].fn(message, serverInfo)
