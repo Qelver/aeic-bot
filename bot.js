@@ -54,7 +54,14 @@ bot.on('messageReactionRemove', (reaction, user) => {
 
 
 // Envoyer un message quand un nouvel utilisateur rejoins le serveur
-bot.on('guildMemberAdd', user => {
-  const channel = user.guild.channels.find(x => x.id === homeChannelId)
-  if (channel) channel.send(getBotMsg('welcome-message', user))
+bot.on('guildMemberAdd', member => {
+  const channel = member.guild.channels.find(x => x.id === homeChannelId)
+  if (channel) {
+    member.send(getBotMsg('welcome-message-private')).catch(console.error)
+    setTimeout(() =>
+      channel.send(getBotMsg('welcome-message-public', member, member.id)).catch(console.error),
+    3000)
+    // Ajout de délais car le bot envoit le message public avant que le membre soit bien
+    // arrivé dans le serveur (Ce membre ne voit pas le message)
+  }
 })
