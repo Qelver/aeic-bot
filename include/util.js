@@ -3,6 +3,8 @@
 const { database } = require('../config')
 const { getBotMsg } = require('./botMessages')
 const sqlQueries = require('./sqlQueries')
+const moment = require('moment')
+
 
 const isInRoleNameChannel = (rolesMap, channelName) => {
   channelName = channelName.toLowerCase()
@@ -58,7 +60,8 @@ const getAvailableGroupsStrErr = message =>
   database.query(sqlQueries.getAllGroups)
     .then(res =>
       getBotMsg('role-groupe-inexistant', message.author) +
-      '\nLes groupes disponibles sont les suivants : ``` ' + res.rows.map(x => x.group_name).toString() + '```'
+      '\nLes groupes disponibles sont les suivants ("tp" + Année d\'étude + Groupe de TP) : ``` '
+      + res.rows.map(x => x.group_name).toString() + '```'
     )
     .catch(console.error)
 
@@ -71,8 +74,9 @@ const getAvailableMaisonsStrErr = message =>
     .catch(console.error)
 
 const catchedError = (message, commandName, err) => {
-  message.channel.send(getBotMsg('erreur-non-decrite-log', null, commandName, err.stack))
-  console.error(`Erreur de la commande '${commandName}' :\n${err.stack}`)
+  const date = moment().format('YYYY-MM-DD')
+  message.channel.send(date + ' ' + getBotMsg('erreur-non-decrite-log', null, commandName, err.stack))
+  console.error(`${date} Erreur de la commande '${commandName}' :\n${err.stack}`)
 }
 
 module.exports = {

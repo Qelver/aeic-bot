@@ -16,7 +16,7 @@ Tu peux afficher la liste de mes commandes en utilisant la commande \`!aide\`. :
 Il est par exemple possible de choisir ton groupe de classe, voir ton planning ou encore trouver le mail d'un prof (Et plein d'autres trucs).
 
 Commence par choisir ton groupe de classe et ta maison d'asso (**sur le serveur discord AEIC**) :ok_hand:
-\`!choisirGroupe tp1a\` ("tp" + Année d'étude + Groupe TP)
+\`!choisirGroupe tp1a\` ("tp" + Année d'étude + Groupe TP / OU ulco / OU invité)
 \`!choisirMaison omega\` (Omega, Theta, Sigma ou Delta)
 
 Ensuite, pense à relier ton compte Moodle (Compte IUT) à ton compte Discord pour pouvoir être retrouvé facilement sur le serveur : https://register-discord.now.sh/
@@ -33,11 +33,11 @@ const helpMsg =
 Voici la liste des commandes de l'AEIC-BOT :
 \`!aide\` : Afficher ce message d'aide.
 
-\`!choisirGroupe\` : Choisir son groupe de classe. Ex : \`!choisirGroupe tp1a\`
+\`!choisirGroupe\` : Choisir son groupe de classe. Ex : \`!choisirGroupe tp1a\` (Sinon ULCO ou invité)
 \`!choisirMaison\` : Choisir sa maison. Ex : \`!choisirMaison Omega\`. Maisons disponibles : Omega, Theta, Sigma ou Delta.
 \`!trouverDiscord\` : Mentionnez un membre du serveur Discord via son identifiant IUT \`nom.prenom\`, \`nom prénom\` ou \`prénom nom\` Ex : \`!trouverDiscord sauvage.antoine\`
 
-Pour des raisons de lisibilité du chat, l'ensemble des commandes sont répertoriées ici : **https://aeic.now.sh/**.
+Pour des raisons de lisibilité du chat, l'ensemble des commandes sont répertoriées ici : https://aeic.now.sh/.
 
 Questions ? Suggestions ? MP le développeur de l'AEIC-BOT <@${devDiscordId}>.
 Repository GitHub du bot (Node.js) : https://github.com/rigwild/aeic-bot.`
@@ -56,8 +56,8 @@ const botMsg = {
   'manque-argument': 'Il manque des arguments à la commande `#toReplace#`.' + needHelp,
   'argument-invalide': 'Les arguments entrés pour la commande `#toReplace#` sont invalides.' + needHelp,
   'aucun-devoir': 'Il n\'y a aucun devoir **enregistré** pour ce groupe.' + needHelp,
-  'relier-discord-ok': 'Ton profil Discord a bien été relié à ton compte Moodle.',
-  'relier-discord-fail': 'Le code d\'appairage Discord-Moodle est invalide.' + needHelp,
+  'relier-discord-ok': 'Ton profil Discord a bien été relié à ton compte Moodle. Reliez votre Discord à votre compte Moodle ici : https://register-discord.now.sh/',
+  'relier-discord-fail': 'Le code d\'appairage Discord-Moodle est invalide.' + needHelp + 'Reliez votre Discord à votre compte Moodle ici : https://register-discord.now.sh/',
   'planning-vide': 'Le planning pour ce groupe est vide. **Attention** ! Cela peut être un bug.' + needHelp,
   'commande-developpeur': 'La commande `#toReplace#` est réservée au développeur du bot. <@' + devDiscordId + '>',
   'mauvais-format-date': 'Le format de date est incorrect.',
