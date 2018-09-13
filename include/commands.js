@@ -19,7 +19,7 @@ const aide = message =>
 // Ajoute un devoir pour un groupe
 // !ajouterDevoir tp1a | 2018-12-12 | Java | TP Breakout
 const ajouterDevoir = message => {
-  const args = util.getCommandArgs(message.content.replace(/!ajouterDevoir/i, '').trim())
+  const args = message.content.replace(/!ajouterDevoir/i, '').trim().split(' | ').map(x => x.trim())
   if (args.length >= 4) {
     (async () => {
       const date = moment(args[1], momentFormat)
@@ -48,9 +48,9 @@ const ajouterDevoir = message => {
 
 
 // Affiche les devoirs d'un groupe
-// !afficherDevoir tp1a
-const afficherDevoir = message => {
-  const groupName = message.content.replace(/!afficherDevoir/i, '').trim()
+// !voirDevoir tp1a
+const voirDevoir = message => {
+  const groupName = message.content.replace(/!voirDevoir/i, '').trim()
   if (groupName.length > 0) {
     (async () => {
       const res = await database.query(sqlQueries.getHomework, [groupName])
@@ -68,9 +68,9 @@ const afficherDevoir = message => {
       }
       else // Aucun devoir pour ce groupe (ou il n'existe pas)
         message.channel.send(getBotMsg('aucun-devoir'))
-    })().catch(err => util.catchedError(message, '!afficherDevoir', err))
+    })().catch(err => util.catchedError(message, '!voirDevoir', err))
   }
-  else message.channel.send(getBotMsg('manque-argument', message.author, '!afficherDevoir'))
+  else message.channel.send(getBotMsg('manque-argument', message.author, '!voirDevoir'))
 }
 
 // Vider les devoirs d'un groupe (Faisable uniquement par le développeur du bot par sécurité)
@@ -150,9 +150,9 @@ const choisirMaison = (message, serverInfo) => {
 
 
 // Affiche l'emploi du temps demandé. Params : Année d'étude, Groupe de TD, Groupe de Tp
-// !afficherPlanning 1 | 1 | b
-const afficherPlanning = message => {
-  const msgContent = message.content.replace(/!afficherPlanning/i, '').trim()
+// !planning 1 1 b
+const planning = message => {
+  const msgContent = message.content.replace(/!planning/i, '').trim()
   const args = util.getCommandArgs(msgContent)
   if (args.length >= 3) {
     if (parseInt(args[0], 10) && parseInt(args[1], 10)) {
@@ -174,13 +174,13 @@ const afficherPlanning = message => {
             })
             message.channel.send(`${msg}${scheduleStr}`.trim())
           }
-          else message.channel.send(getBotMsg('planning-vide', message.author, '!afficherPlanning'))
+          else message.channel.send(getBotMsg('planning-vide', message.author, '!planning'))
         })
-        .catch(err => util.catchedError(message, '!afficherPlanning', err))
+        .catch(err => util.catchedError(message, '!planning', err))
     }
-    else message.channel.send(getBotMsg('argument-invalide', message.author, '!afficherPlanning'))
+    else message.channel.send(getBotMsg('argument-invalide', message.author, '!planning'))
   }
-  else message.channel.send(getBotMsg('manque-argument', message.author, '!afficherPlanning'))
+  else message.channel.send(getBotMsg('manque-argument', message.author, '!planning'))
 }
 
 // Valide un code d'appairage Discord-Moodle https://github.com/rigwild/register-discord
@@ -264,8 +264,8 @@ const trouverMail = message => {
 const commandsList = {
   '!aide': {fn: aide, needServerInfo: false},
   '!ajouterDevoir': {fn: ajouterDevoir, needServerInfo: false},
-  '!afficherDevoir': {fn: afficherDevoir, needServerInfo: false},
-  '!afficherPlanning': {fn: afficherPlanning, needServerInfo: false},
+  '!voirDevoir': {fn: voirDevoir, needServerInfo: false},
+  '!planning': {fn: planning, needServerInfo: false},
   '!choisirGroupe': {fn: choisirGroupe, needServerInfo: true},
   '!choisirMaison': {fn: choisirMaison, needServerInfo: true},
   '!relierDiscord': {fn: relierDiscord, needServerInfo: false},

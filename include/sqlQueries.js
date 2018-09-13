@@ -24,7 +24,7 @@ module.exports.addHomework =
 
 module.exports.getHomework =
   `SELECT * FROM homework
-  WHERE LOWER(group_name) = LOWER($1) AND date > current_date + 1
+  WHERE LOWER(group_name) = LOWER($1) AND date > current_date - 1
   ORDER BY date`
 
 module.exports.getAllNotifications = 'SELECT notif_name FROM notification'

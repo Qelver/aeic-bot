@@ -16,7 +16,7 @@ const isInRoleNameChannel = (rolesMap, channelName) => {
 }
 
 const getCommandArgs = msgContent => {
-  let args = msgContent.split(' | ')
+  let args = msgContent.split(' ')
   args = args.map(x => x.trim())
   return args
 }

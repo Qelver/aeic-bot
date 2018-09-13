@@ -26,9 +26,9 @@ const commands = [
     \nSe rendre sur cette page pour obtenir votre code : https://register-discord.now.sh/`
   },
   {
-    name: '!afficherPlanning',
+    name: '!planning',
     description: 'Afficher le planning d\'un groupe',
-    example: `!afficherPlanning 1 | 2 | c
+    example: `!planning 1 2 c
     \nFormat : Année [1], TD[2], TP[C]`
   },
   {
