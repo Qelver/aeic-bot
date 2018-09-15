@@ -44,9 +44,9 @@ const commands = [
     \nFormat : groupe, date, matière/module, contenu`
   },
   {
-    name: '!afficherDevoir',
+    name: '!voirDevoir',
     description: 'Afficher la liste des devoirs d\'un groupe',
-    example: '!afficherDevoir tp1a'
+    example: '!voirDevoir tp1a'
   }
 ]
 

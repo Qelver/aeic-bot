@@ -30,19 +30,12 @@ Je t\'ai envoyé un message privé pour t\'expliquer mon fonctionnement. :wink:`
 const helpMsg =
 `Pour configurer tes notifications rends-toi dans le channel <#${configNotificationsChannelId}>.
 
-Voici la liste des commandes de l'AEIC-BOT :
-\`!aide\` : Afficher ce message d'aide.
-
-\`!choisirGroupe\` : Choisir son groupe de classe. Ex : \`!choisirGroupe tp1a\` (Sinon ULCO ou invité)
-\`!choisirMaison\` : Choisir sa maison. Ex : \`!choisirMaison Omega\`. Maisons disponibles : Omega, Theta, Sigma ou Delta.
-\`!trouverDiscord\` : Mentionnez un membre du serveur Discord via son identifiant IUT \`nom.prenom\`, \`nom prénom\` ou \`prénom nom\` Ex : \`!trouverDiscord sauvage.antoine\`
-
-Pour des raisons de lisibilité du chat, l'ensemble des commandes sont répertoriées ici : https://aeic.now.sh/.
+Pour des raisons de lisibilité du chat, les commandes sont répertoriées ici : https://aeic.now.sh/.
 
 Questions ? Suggestions ? MP le développeur de l'AEIC-BOT <@${devDiscordId}>.
 Repository GitHub du bot (Node.js) : https://github.com/rigwild/aeic-bot.`
 
-const needHelp = ' Utilise `!aide` pour obtenir de l\'aide sur les commandes.'
+const needHelp = ' Rends-toi sur https://aeic.now.sh/ pour obtenir de l\'aide sur les commandes.'
 
 const botMsg = {
   'aeic-bot-help': helpMsg,

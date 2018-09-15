@@ -73,7 +73,7 @@ const voirDevoir = message => {
   else message.channel.send(getBotMsg('manque-argument', message.author, '!voirDevoir'))
 }
 
-// Vider les devoirs d'un groupe (Faisable uniquement par le développeur du bot par sécurité)
+// Vider les devoirs d'un groupe (Commande développeur)
 // !viderDevoir tp1a
 const viderDevoir = message => {
   if (message.author.id === devDiscordId) {
@@ -126,7 +126,6 @@ const choisirMaison = (message, serverInfo) => {
   const maisonToAdd = message.content.replace(/!choisirMaison/i, '').trim()
   if (maisonToAdd) {
     (async () => {
-
       const res = await database.query(sqlQueries.searchMaison, [maisonToAdd])
       if (res.rowCount > 0) { // La maison existe
         const res2 = await database.query(sqlQueries.getAllMaisons)
@@ -244,6 +243,33 @@ const trouverDiscord = message => {
   else message.channel.send(getBotMsg('manque-argument', message.author, '!trouverDiscord'))
 }
 
+// Trouver le nom d'un membre du serveur via son Discord. (Commande développeur)
+// !trouverNom @rigwild#5145
+const trouverNom = message => {
+  if (message.author.id === devDiscordId) {
+    const toSearch = message.mentions.users.size > 0 ? message.mentions.users.map(x => x.id) : null
+    if (toSearch) {
+      (async () => {
+        message.channel.send(`Hey <@${message.author.id}>, je t'ai envoyé en message privé le résultat de la commande. Reliez votre Discord à votre compte Moodle ici : https://register-discord.now.sh/`)
+
+        let toSend = ''
+        await Promise.all(toSearch.map(async (x, i) => {
+          const res = await database.query(sqlQueries.searchNameByDiscord, [x])
+          if (res.rowCount > 0)
+            toSend += `Le nom de <@${x}> est "${res.rows[0].firstname} ${res.rows[0].lastname}".`
+          else
+            toSend += `Le nom de <@${x}> n'a pas été trouvé.`
+          if (i < toSearch.length) toSend += '\n'
+        }))
+        message.author.send(toSend)
+
+      })().catch(err => util.catchedError(message, '!trouverNom', err))
+    }
+    else message.channel.send(getBotMsg('argument-invalide', message.author, '!trouverNom'))
+  }
+  else message.channel.send(getBotMsg('commande-developpeur', message.author, '!trouverNom'))
+}
+
 // Trouve l'adresse mail d'un professeur
 // !trouverMail synave
 const trouverMail = message => {
@@ -270,6 +296,7 @@ const commandsList = {
   '!choisirMaison': {fn: choisirMaison, needServerInfo: true},
   '!relierDiscord': {fn: relierDiscord, needServerInfo: false},
   '!trouverDiscord': {fn: trouverDiscord, needServerInfo: false},
+  '!trouverNom': {fn: trouverNom, needServerInfo: false},
   '!trouverMail': {fn: trouverMail, needServerInfo: false},
   '!viderDevoir': {fn: viderDevoir, needServerInfo: false}
 }
