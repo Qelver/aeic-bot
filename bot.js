@@ -17,13 +17,13 @@ const { searchCommand } = require('./include/commands')
 const bot = new Discord.Client()
 bot.login(discordAuthToken)
 
-let serverInfo
+let serverInfo = null
 bot.on('ready', () => {
   // Récupérer les infos du serveur
-  serverInfo = bot.guilds.find('name', serverName)
+  serverInfo = bot.guilds.find(x => x.name === serverName)
 
   // Lire les messages présents dans config-notifications (Pour regarder l'ajout de réaction)
-  serverInfo.channels.find('name', 'config-notifications').fetchMessages({ limit: 50 })
+  serverInfo.channels.find(x => x.name === 'config-notifications').fetchMessages({ limit: 50 })
 
   console.log(`Bot Connecté au serveur ${serverName}.`)
 })
