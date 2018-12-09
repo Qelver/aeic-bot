@@ -48,9 +48,9 @@ const ajouterDevoir = message => {
 
 
 // Affiche les devoirs d'un groupe
-// !voirDevoir tp1a
-const voirDevoir = message => {
-  const groupName = message.content.replace(/!voirDevoir/i, '').trim()
+// !afficherDevoir tp1a
+const afficherDevoir = message => {
+  const groupName = message.content.replace(/!afficherDevoir/i, '').trim()
   if (groupName.length > 0) {
     (async () => {
       const res = await database.query(sqlQueries.getHomework, [groupName])
@@ -68,9 +68,9 @@ const voirDevoir = message => {
       }
       else // Aucun devoir pour ce groupe (ou il n'existe pas)
         message.channel.send(getBotMsg('aucun-devoir'))
-    })().catch(err => util.catchedError(message, '!voirDevoir', err))
+    })().catch(err => util.catchedError(message, '!afficherDevoir', err))
   }
-  else message.channel.send(getBotMsg('manque-argument', message.author, '!voirDevoir'))
+  else message.channel.send(getBotMsg('manque-argument', message.author, '!afficherDevoir'))
 }
 
 // Vider les devoirs d'un groupe (Commande développeur)
@@ -290,7 +290,7 @@ const trouverMail = message => {
 const commandsList = {
   '!aide': {fn: aide, needServerInfo: false},
   '!ajouterDevoir': {fn: ajouterDevoir, needServerInfo: false},
-  '!voirDevoir': {fn: voirDevoir, needServerInfo: false},
+  '!afficherDevoir': {fn: afficherDevoir, needServerInfo: false},
   '!planning': {fn: planning, needServerInfo: false},
   '!choisirGroupe': {fn: choisirGroupe, needServerInfo: true},
   '!choisirMaison': {fn: choisirMaison, needServerInfo: true},

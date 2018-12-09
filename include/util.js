@@ -27,7 +27,7 @@ const setRole = (serverInfo, user, setRoleBool, ...roles) => {
   if (userEle) {
     roles.forEach(aRole => {
       // On récupère les infos du rôle
-      const aRoleEle = serverInfo.roles.find('name', aRole)
+      const aRoleEle = serverInfo.roles.find(x => x.name === aRole)
       if (aRoleEle) { // Role existe
 
         // On check si l'user possède déjà le rôle
